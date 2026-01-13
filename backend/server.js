@@ -20,7 +20,7 @@ const port = process.env.PORT || 3000;
 const allowedOrigins = [
     "https://ommverse.vercel.app",
     "https://omm-admin.vercel.app",
-    "https://ommverse.com"
+    "https://ommverse.com",
     "http://localhost:3000",
     "http://localhost:5173",
     "http://localhost:5174",
