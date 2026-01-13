@@ -8,9 +8,9 @@ const Contact = () => {
   
   // Use dynamic data if available, otherwise fallback to static assets
   const contactImage = websiteInfo?.contactImage || assets.contact;
-  const storeAddress = websiteInfo?.storeAddress || "54709 Willms Station\nSuite 350, Washington, USA";
-  const phone = websiteInfo?.phone || "(415) 555-0132";
-  const email = websiteInfo?.email || "admin@ironwoodclothing.com";
+  const storeAddress = websiteInfo?.storeAddress || "";
+  const phone = websiteInfo?.phone || "";
+  const email = websiteInfo?.email || "";
 
   return (
     <div>

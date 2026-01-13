@@ -8,7 +8,7 @@ const Footer = () => {
   // Use dynamic data if available, otherwise fallback to static assets
   const logo = websiteInfo?.logo || assets.logo2;
   const companyDescription = websiteInfo?.companyDescription || 
-    "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.";
+    "Premium quality. Timeless design. Sustainable style. IRONWOOD offers a curated collection of apparel designed for the bold and the authentic. Join us in redefining everyday fashion with pieces that feel as good as they look.";
   const phone = websiteInfo?.phone || "+1-000-000-0000";
   const email = websiteInfo?.email || "devdiariesbyshozab@gmail.com";
   const instagram = websiteInfo?.instagram || "";
