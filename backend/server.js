@@ -18,7 +18,7 @@ const port = process.env.PORT || 3000;
 
 // CORS configuration
 const allowedOrigins = [
-    "https://omm-clothing.vercel.app",
+    "https://ommverse.vercel.app",
     "https://omm-admin.vercel.app",
     "http://localhost:3000",
     "http://localhost:5173",
