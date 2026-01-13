@@ -33,7 +33,7 @@ const Contact = () => {
               Tel: {phone} <br /> Email: {email}
             </p>
             <p className="font-semibold text-xl text-gray-600">
-              Careers at Forever
+              Careers at OMM
             </p>
             <p className="text-gray-500">
               Learn more about our teams and job openings.
