@@ -11,7 +11,7 @@ const NewsLetter = () => {
         Subscribe now
       </p>
       <p className="text-gray-400 mt-3">
-        Sign up for the IRONWOOD newsletter. Enjoy your first purchase and stay ahead of the trends.
+        Sign up for the OMM newsletter. Enjoy your first purchase and stay ahead of the trends.
       </p>
       <form
         onSubmit={onSubmitHandler}

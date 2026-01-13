@@ -16,11 +16,20 @@ const app = express();
 const httpServer = createServer(app);
 const port = process.env.PORT || 3000;
 
+// CORS configuration
+const allowedOrigins = [
+    "https://omm-clothing.vercel.app",
+    "http://localhost:3000",
+    "http://localhost:5173",
+    "http://localhost:5174",
+];
+
 // Socket.io setup
 const io = new Server(httpServer, {
     cors: {
-        origin: "*",
+        origin: allowedOrigins,
         methods: ["GET", "POST"],
+        credentials: true,
     },
 });
 
@@ -35,7 +44,18 @@ connectCloudinary();
 
 // Middlewares
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+    origin: function(origin, callback) {
+        // Allow requests with no origin (like mobile apps or curl requests)
+        if (!origin) return callback(null, true);
+        if (allowedOrigins.indexOf(origin) !== -1) {
+            callback(null, true);
+        } else {
+            callback(new Error("Not allowed by CORS"));
+        }
+    },
+    credentials: true,
+}));
 
 // Api Endpoints
 app.use("/api/user", userRouter);

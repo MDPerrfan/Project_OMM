@@ -166,8 +166,8 @@ const Add = ({ token }) => {
             className="w-full px-3 py-2"
           >
             <option value="Men">Men</option>
-            <option value="Women">Women</option>
-            <option value="Kids">Kids</option>
+            {/* <option value="Women">Women</option>
+            <option value="Kids">Kids</option> */}
           </select>
         </div>
         <div>
