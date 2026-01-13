@@ -14,7 +14,7 @@ import { Navigate } from "react-router-dom";
 import { io } from "socket.io-client";
 
 export const backendUrl = import.meta.env.VITE_BACKEND_URL;
-export const currency = "$"
+export const currency = "৳"
 
 const App = () => {
   const [token, setToken] = useState(
