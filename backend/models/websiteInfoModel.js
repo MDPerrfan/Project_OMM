@@ -13,6 +13,7 @@ const websiteInfoSchema = new mongoose.Schema({
     logo: { type: String, default: "" },
     heroImage: { type: String, default: "" },
     contactImage: { type: String, default: "" },
+    aboutImage: { type: String, default: "" },
 
     // Last updated timestamp
     updatedAt: { type: Number, default: Date.now },

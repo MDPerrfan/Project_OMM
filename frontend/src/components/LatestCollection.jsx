@@ -2,9 +2,10 @@ import React, { useContext, useEffect, useState } from "react";
 import { ShopContext } from "../contexts/ShopContext";
 import Title from "./Title";
 import ProductItem from "./ProductItem";
+import ProductGridSkeleton from "./ProductGridSkeleton";
 
 const LatestCollection = () => {
-  const { products } = useContext(ShopContext);
+  const { products, loadingProducts } = useContext(ShopContext);
 
   const [latestProducts, setLatestProducts] = useState([]);
 
@@ -20,17 +21,21 @@ const LatestCollection = () => {
         The wait is over. Shop our new arrivals and stay ahead of the trends with the season's most-coveted styles.        </p>
       </div>
       {/* Rendering products */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-4 gap-y-6">
-        {latestProducts.map((item, index) => (
-          <ProductItem
-            key={index}
-            id={item._id}
-            image={item.image}
-            name={item.name}
-            price={item.price}
-          />
-        ))}
-      </div>
+      {loadingProducts ? (
+        <ProductGridSkeleton count={10} />
+      ) : (
+        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-4 gap-y-6">
+          {latestProducts.map((item, index) => (
+            <ProductItem
+              key={index}
+              id={item._id}
+              image={item.image}
+              name={item.name}
+              price={item.price}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 };

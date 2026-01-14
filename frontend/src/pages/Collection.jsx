@@ -1,11 +1,11 @@
 import React, { useContext, useEffect, useState } from "react";
 import { ShopContext } from "../contexts/ShopContext";
-import { assets } from "../assets/frontend_assets/assets";
 import Title from "../components/Title";
 import ProductItem from "../components/ProductItem";
+import ProductGridSkeleton from "../components/ProductGridSkeleton";
 
 const Collection = () => {
-  const { products, search, showSearch } = useContext(ShopContext);
+  const { products, search, showSearch, loadingProducts } = useContext(ShopContext);
   const [showFilter, setShowFilter] = useState(false);
   const [filterProducts, setFilterProducts] = useState([]);
   const [category, setCategory] = useState([]);
@@ -84,11 +84,15 @@ const Collection = () => {
           className="my-2 text-xl flex items-center cursor-pointer gap-2"
         >
           FILTERS
-          <img
-            className={`h-3 sm:hidden ${showFilter ? "rotate-90" : ""}`}
-            src={assets.dropdown_icon}
-            alt="dropdown_icon"
-          />
+          <svg
+            className={`h-3 w-3 sm:hidden ${showFilter ? "rotate-90" : ""}`}
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          </svg>
         </p>
         {/* Category Filter */}
         <div
@@ -180,17 +184,21 @@ const Collection = () => {
           </select>
         </div>
         {/* Mapping Products */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 gap-y-6">
-          {filterProducts.map((item, index) => (
-            <ProductItem
-              key={index}
-              id={item._id}
-              name={item.name}
-              price={item.price}
-              image={item.image}
-            />
-          ))}
-        </div>
+        {loadingProducts ? (
+          <ProductGridSkeleton count={12} />
+        ) : (
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 gap-y-6">
+            {filterProducts.map((item, index) => (
+              <ProductItem
+                key={index}
+                id={item._id}
+                name={item.name}
+                price={item.price}
+                image={item.image}
+              />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

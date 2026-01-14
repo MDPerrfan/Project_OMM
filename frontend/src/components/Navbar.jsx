@@ -1,5 +1,4 @@
 import React, { useContext, useState } from "react";
-import { assets } from "../assets/frontend_assets/assets";
 import { NavLink, Link } from "react-router-dom";
 import { ShopContext } from "../contexts/ShopContext";
 import { useUser, UserButton, SignInButton } from "@clerk/clerk-react";
@@ -17,14 +16,15 @@ const Navbar = () => {
 
   const userName = user?.firstName || user?.fullName || "";
   const userAvatar = user?.imageUrl;
-  
-  // Use dynamic logo if available, otherwise fallback to static asset
-  const logo = websiteInfo?.logo || assets.logo2;
 
   return (
     <div className="flex items-center justify-between py-5 font-medium">
       <Link to="/">
-        <img src={logo} className="w-36" alt="forver_logo" />
+        {websiteInfo?.logo ? (
+          <img src={websiteInfo.logo} className="w-36" alt="forver_logo" />
+        ) : (
+          <div className="w-36 h-10 bg-gray-200 animate-pulse rounded"></div>
+        )}
       </Link>
       <ul className="hidden sm:flex gap-5 text-sm text-gray-700">
         <NavLink to="/" className="flex flex-col items-center gap-1">
@@ -45,12 +45,16 @@ const Navbar = () => {
         </NavLink>
       </ul>
       <div className="flex items-center gap-6">
-        <img
+        <svg
           onClick={() => setShowSearch(true)}
-          src={assets.search_icon}
-          className="w-5 cursor-pointer"
-          alt="search_icon"
-        />
+          className="w-5 h-5 cursor-pointer"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
         <div className="group relative">
           {isSignedIn ? (
             <div className="flex items-center gap-2">
@@ -66,11 +70,15 @@ const Navbar = () => {
             </div>
           ) : (
             <SignInButton mode="modal" redirectUrl="/">
-              <img
-                src={assets.profile_icon}
-                className="w-5 cursor-pointer"
-                alt="profile_icon"
-              />
+              <svg
+                className="w-5 h-5 cursor-pointer"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              </svg>
             </SignInButton>
           )}
           {/* Orders shortcut on hover when signed in */}
@@ -88,17 +96,29 @@ const Navbar = () => {
           )}
         </div>
         <Link to="/cart" className="relative">
-          <img src={assets.cart_icon} className="w-5 min-w-5" alt="cart_icon" />
+          <svg
+            className="w-5 h-5 min-w-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+          </svg>
           <p className="absolute right-[-5px] bottom-[-5px] w-4 text-center leading-4 bg-black text-white aspect-square rounded-full text-[8px]">
             {getCartCount()}
           </p>
         </Link>
-        <img
+        <svg
           onClick={() => setVisible(true)}
-          src={assets.menu_icon}
-          className="w-5 cursor-pointer sm:hidden"
-          alt="menu_icon"
-        />
+          className="w-5 h-5 cursor-pointer sm:hidden"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
       </div>
       {/* Sidebar menu for small screens */}
       <div
@@ -111,11 +131,15 @@ const Navbar = () => {
             onClick={() => setVisible(false)}
             className="flex items-center gap-4 p-3 cursor-pointer"
           >
-            <img
-              src={assets.dropdown_icon}
+            <svg
               className="h-4 rotate-180"
-              alt="dropdown_icon"
-            />
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
             <p>Back</p>
           </div>
           <NavLink

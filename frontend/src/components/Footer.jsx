@@ -1,12 +1,8 @@
 import React, { useContext } from "react";
-import { assets } from "../assets/frontend_assets/assets";
 import { ShopContext } from "../contexts/ShopContext";
 
 const Footer = () => {
   const { websiteInfo } = useContext(ShopContext);
-  
-  // Use dynamic data if available, otherwise fallback to static assets
-  const logo = websiteInfo?.logo || assets.logo2;
   const companyDescription = websiteInfo?.companyDescription || 
     "Premium quality. Timeless design. Sustainable style. IRONWOOD offers a curated collection of apparel designed for the bold and the authentic. Join us in redefining everyday fashion with pieces that feel as good as they look.";
   const phone = websiteInfo?.phone || "+1-000-000-0000";
@@ -17,7 +13,11 @@ const Footer = () => {
     <div>
       <div className="flex flex-col sm:grid grid-cols-[3fr_1fr_1fr] gap-14 my-10 mt-40 text-sm">
         <div>
-          <img src={logo} className="mb-5 w-32" alt="" />
+          {websiteInfo?.logo ? (
+            <img src={websiteInfo.logo} className="mb-5 w-32" alt="" />
+          ) : (
+            <div className="mb-5 w-32 h-8 bg-gray-200 animate-pulse rounded"></div>
+          )}
           <p className="w-full md:w-2/3 text-gray-600">
             {companyDescription}
           </p>

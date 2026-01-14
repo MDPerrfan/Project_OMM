@@ -1,9 +1,9 @@
 import React, { useContext, useEffect, useState } from "react";
 import { ShopContext } from "../contexts/ShopContext";
 import Title from "../components/Title";
-import { assets } from "../assets/frontend_assets/assets";
 import CartTotal from "../components/CartTotal";
 import { toast } from "react-toastify";
+import Loading from "../components/Loading";
 
 const Cart = () => {
   const {
@@ -13,6 +13,8 @@ const Cart = () => {
     updateQuantity,
     navigate,
     getCartCount,
+    loadingProducts,
+    loadingCart,
   } = useContext(ShopContext);
   const [cartData, setCartData] = useState([]);
 
@@ -35,6 +37,10 @@ const Cart = () => {
       setCartData(tempData);
     }
   }, [cartItems, products]);
+
+  if (loadingProducts || loadingCart) {
+    return <Loading message="Loading cart..." />;
+  }
 
   return (
     <div className="border-t pt-14">
@@ -83,12 +89,16 @@ const Cart = () => {
                       )
                 }
               />
-              <img
+              <svg
                 className="w-4 mr-4 sm:w-5 cursor-pointer"
-                src={assets.bin_icon}
-                alt="bin_icon"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
                 onClick={() => updateQuantity(item._id, item.size, 0)}
-              />
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
             </div>
           );
         })}

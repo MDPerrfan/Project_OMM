@@ -54,7 +54,12 @@ app.use("/api/product", productRouter);
 app.use("/api/cart", cartRouter);
 app.use("/api/order", orderRouter);
 app.use("/api/website", websiteInfoRouter);
+// Look for something like this:
+const PORT = process.env.PORT || 4000;
 
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+});
 app.get("/", (req, res) => {
     res.send("API WORKING");
 });

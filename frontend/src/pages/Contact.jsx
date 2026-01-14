@@ -1,13 +1,9 @@
 import React, { useContext } from "react";
 import Title from "../components/Title";
-import { assets } from "../assets/frontend_assets/assets";
 import { ShopContext } from "../contexts/ShopContext";
 
 const Contact = () => {
   const { websiteInfo } = useContext(ShopContext);
-  
-  // Use dynamic data if available, otherwise fallback to static assets
-  const contactImage = websiteInfo?.contactImage || assets.contact;
   const storeAddress = websiteInfo?.storeAddress || "";
   const phone = websiteInfo?.phone || "";
   const email = websiteInfo?.email || "";
@@ -18,11 +14,15 @@ const Contact = () => {
         <Title text1={"CONTACT"} text2={"US"} />
       </div>
       <div className="my-10 flex flex-col justify-center md:flex-row gap-10 mb-28">
-        <img
-          className="w-full md:max-w-[480px]"
-          src={contactImage}
-          alt="contact_img"
-        />
+        {websiteInfo?.contactImage ? (
+          <img
+            className="w-full md:max-w-[480px]"
+            src={websiteInfo.contactImage}
+            alt="contact_img"
+          />
+        ) : (
+          <div className="w-full md:max-w-[480px] h-64 bg-gray-200 animate-pulse rounded"></div>
+        )}
         <div className="flex flex-col justify-center items-start gap-6">
           <div className="flex flex-col justify-center items-start gap-6">
             <p className="font-semibold text-xl text-gray-600">Our Store</p>

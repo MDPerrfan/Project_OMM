@@ -18,11 +18,13 @@ const WebsiteInfo = ({ token }) => {
     logo: "",
     heroImage: "",
     contactImage: "",
+    aboutImage: "",
   });
 
   const [logoFile, setLogoFile] = useState(null);
   const [heroImageFile, setHeroImageFile] = useState(null);
   const [contactImageFile, setContactImageFile] = useState(null);
+  const [aboutImageFile, setAboutImageFile] = useState(null);
 
   const fetchWebsiteInfo = async () => {
     try {
@@ -69,11 +71,13 @@ const WebsiteInfo = ({ token }) => {
       if (websiteInfo.logo && !logoFile) formData.append("logo", websiteInfo.logo);
       if (websiteInfo.heroImage && !heroImageFile) formData.append("heroImage", websiteInfo.heroImage);
       if (websiteInfo.contactImage && !contactImageFile) formData.append("contactImage", websiteInfo.contactImage);
+      if (websiteInfo.aboutImage && !aboutImageFile) formData.append("aboutImage", websiteInfo.aboutImage);
       
       // Add new image files if selected
       if (logoFile) formData.append("logo", logoFile);
       if (heroImageFile) formData.append("heroImage", heroImageFile);
       if (contactImageFile) formData.append("contactImage", contactImageFile);
+      if (aboutImageFile) formData.append("aboutImage", aboutImageFile);
 
       const response = await axios.post(
         backendUrl + "/api/website/update",
@@ -87,6 +91,7 @@ const WebsiteInfo = ({ token }) => {
         setLogoFile(null);
         setHeroImageFile(null);
         setContactImageFile(null);
+        setAboutImageFile(null);
         // Refresh data
         fetchWebsiteInfo();
       } else {
@@ -285,6 +290,36 @@ const WebsiteInfo = ({ token }) => {
                 {contactImageFile && (
                   <p className="text-sm text-gray-600">
                     Selected: {contactImageFile.name}
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* About Image */}
+          <div>
+            <p className="mb-2">About Page Image</p>
+            <div className="flex flex-col sm:flex-row gap-4 items-start">
+              {websiteInfo.aboutImage && (
+                <img
+                  src={websiteInfo.aboutImage}
+                  alt="Current about image"
+                  className="w-64 h-32 object-cover border"
+                />
+              )}
+              <div className="flex flex-col gap-2">
+                <label className="cursor-pointer border px-4 py-2 inline-block w-fit hover:bg-gray-100">
+                  {aboutImageFile ? "Change About Image" : "Upload About Image"}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => setAboutImageFile(e.target.files[0])}
+                    className="hidden"
+                  />
+                </label>
+                {aboutImageFile && (
+                  <p className="text-sm text-gray-600">
+                    Selected: {aboutImageFile.name}
                   </p>
                 )}
               </div>

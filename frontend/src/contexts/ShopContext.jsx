@@ -19,6 +19,9 @@ const ShopContextProvider = ({ children }) => {
   );
   const [guestId] = useState(getGuestId());
   const [websiteInfo, setWebsiteInfo] = useState(null);
+  const [loadingProducts, setLoadingProducts] = useState(true);
+  const [loadingCart, setLoadingCart] = useState(true);
+  const [loadingWebsiteInfo, setLoadingWebsiteInfo] = useState(true);
   const navigate = useNavigate();
 
   const addToCart = async (itemId, size) => {
@@ -107,6 +110,7 @@ const ShopContextProvider = ({ children }) => {
 
   const getProductsData = async () => {
     try {
+      setLoadingProducts(true);
       const response = await axios.get(backendUrl + "/api/product/list");
 
       if (response.data.success) {
@@ -117,11 +121,14 @@ const ShopContextProvider = ({ children }) => {
     } catch (error) {
       console.log(error);
       toast.error(error.message);
+    } finally {
+      setLoadingProducts(false);
     }
   };
 
   const getWebsiteInfo = async () => {
     try {
+      setLoadingWebsiteInfo(true);
       const response = await axios.get(backendUrl + "/api/website/get");
       if (response.data.success) {
         setWebsiteInfo(response.data.websiteInfo);
@@ -129,11 +136,14 @@ const ShopContextProvider = ({ children }) => {
     } catch (error) {
       console.log(error);
       // Don't show error toast for website info as it's not critical
+    } finally {
+      setLoadingWebsiteInfo(false);
     }
   };
 
   const getUserCart = async (token) => {
     try {
+      setLoadingCart(true);
       const response = await axios.post(
         backendUrl + "/api/cart/get",
         {},
@@ -146,6 +156,8 @@ const ShopContextProvider = ({ children }) => {
     } catch (error) {
       console.log(error);
       toast.error(error.message);
+    } finally {
+      setLoadingCart(false);
     }
   };
 
@@ -179,6 +191,9 @@ const ShopContextProvider = ({ children }) => {
     setToken,
     guestId,
     websiteInfo,
+    loadingProducts,
+    loadingCart,
+    loadingWebsiteInfo,
   };
 
   return <ShopContext.Provider value={value}>{children}</ShopContext.Provider>;

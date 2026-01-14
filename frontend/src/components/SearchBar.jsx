@@ -1,6 +1,5 @@
 import React, { useContext } from "react";
 import { ShopContext } from "../contexts/ShopContext";
-import { assets } from "../assets/frontend_assets/assets";
 
 const SearchBar = () => {
   const { search, showSearch, setSearch, setShowSearch } =
@@ -16,14 +15,20 @@ const SearchBar = () => {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
-        <img className="w-4" src={assets.search_icon} alt="search_icon" />
+        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
       </div>
-      <img
-        className="inline w-3 cursor-pointer"
+      <svg
+        className="inline w-3 h-3 cursor-pointer"
         onClick={() => setShowSearch(false)}
-        src={assets.cross_icon}
-        alt="cross_icon"
-      />
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+      </svg>
     </div>
   ) : null;
 };

@@ -19,6 +19,7 @@ websiteInfoRouter.post(
         { name: "logo", maxCount: 1 },
         { name: "heroImage", maxCount: 1 },
         { name: "contactImage", maxCount: 1 },
+        { name: "aboutImage", maxCount: 1 },
     ]),
     updateWebsiteInfo
 );

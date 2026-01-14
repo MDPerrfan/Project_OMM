@@ -38,12 +38,14 @@ const updateWebsiteInfo = async(req, res) => {
       logo,
       heroImage,
       contactImage,
+      aboutImage,
     } = req.body;
 
         // Handle image uploads if files are provided
         let logoUrl = logo;
         let heroImageUrl = heroImage;
         let contactImageUrl = contactImage;
+        let aboutImageUrl = aboutImage;
 
         if (req.files) {
             // Helper function to upload with size check
@@ -80,6 +82,10 @@ const updateWebsiteInfo = async(req, res) => {
             if (req.files.contactImage && req.files.contactImage[0]) {
                 contactImageUrl = await uploadWithSizeCheck(req.files.contactImage[0], "Contact image");
             }
+
+            if (req.files.aboutImage && req.files.aboutImage[0]) {
+                aboutImageUrl = await uploadWithSizeCheck(req.files.aboutImage[0], "About image");
+            }
         }
 
         // Get existing info or create new
@@ -98,6 +104,7 @@ const updateWebsiteInfo = async(req, res) => {
         if (logoUrl !== undefined) updateData.logo = logoUrl;
         if (heroImageUrl !== undefined) updateData.heroImage = heroImageUrl;
         if (contactImageUrl !== undefined) updateData.contactImage = contactImageUrl;
+        if (aboutImageUrl !== undefined) updateData.aboutImage = aboutImageUrl;
 
         if (!websiteInfo) {
             websiteInfo = new websiteInfoModel(updateData);

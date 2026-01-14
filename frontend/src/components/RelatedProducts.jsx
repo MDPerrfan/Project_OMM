@@ -2,9 +2,10 @@ import React, { useContext, useEffect, useState } from "react";
 import { ShopContext } from "../contexts/ShopContext";
 import Title from "./Title";
 import ProductItem from "./ProductItem";
+import ProductGridSkeleton from "./ProductGridSkeleton";
 
 const RelatedProducts = ({ category, subCategory }) => {
-  const { products } = useContext(ShopContext);
+  const { products, loadingProducts } = useContext(ShopContext);
   const [related, setRelated] = useState([]);
 
   useEffect(() => {
@@ -22,11 +23,15 @@ const RelatedProducts = ({ category, subCategory }) => {
     <div className="my-24">
       <div className=" text-center text-3xl py-2">
         <Title text1={"RELATED"} text2={"PRODUCTS"} />
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 gap-y-6">
+        {loadingProducts ? (
+          <ProductGridSkeleton count={5} />
+        ) : (
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 gap-y-6">
             {related.map((item, index)=>(
                 <ProductItem key={index} id={item._id} name={item.name} price={item.price} image={item.image} />
             ))}
-        </div>
+          </div>
+        )}
       </div>
     </div>
   );
