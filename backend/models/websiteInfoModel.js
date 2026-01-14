@@ -1,13 +1,13 @@
 import mongoose from "mongoose";
 
 const websiteInfoSchema = new mongoose.Schema({
-  // Contact Information
-  storeAddress: { type: String, default: "" },
-  phone: { type: String, default: "" },
-  email: { type: String, default: "" },
-  instagram: { type: String, default: "" },
-  facebook: { type: String, default: "" },
-  companyDescription: { type: String, default: "" },
+    // Contact Information
+    storeAddress: { type: String, default: "" },
+    phone: { type: String, default: "" },
+    email: { type: String, default: "" },
+    instagram: { type: String, default: "" },
+    facebook: { type: String, default: "" },
+    companyDescription: { type: String, default: "" },
 
     // Images (Cloudinary URLs)
     logo: { type: String, default: "" },

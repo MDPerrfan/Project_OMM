@@ -8,15 +8,18 @@ import Loading from "../components/Loading";
 
 const Orders = ({ token }) => {
   const [orders, setOrders] = useState([]);
-  const [loading, setLoading] = useState(true);
+  // Start as not loading; only show loader while we actually talk to the server
+  const [loading, setLoading] = useState(false);
   const [updating, setUpdating] = useState(false);
 
   const fetchAllOrders = async () => {
-    if (!token) {
-      return null;
-    }
-
     try {
+      if (!token) {
+        // No admin token → nothing to load, don't block the UI with a spinner
+        setLoading(false);
+        return;
+      }
+
       setLoading(true);
       const response = await axios.post(
         backendUrl + "/api/order/list",

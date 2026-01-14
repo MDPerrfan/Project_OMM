@@ -4,7 +4,7 @@ import HeroSkeleton from "./HeroSkeleton";
 
 const Hero = () => {
   const { websiteInfo, loadingWebsiteInfo } = useContext(ShopContext);
-
+  
   if (loadingWebsiteInfo || !websiteInfo?.heroImage) {
     return <HeroSkeleton />;
   }

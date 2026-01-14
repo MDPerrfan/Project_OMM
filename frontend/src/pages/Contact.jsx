@@ -15,11 +15,11 @@ const Contact = () => {
       </div>
       <div className="my-10 flex flex-col justify-center md:flex-row gap-10 mb-28">
         {websiteInfo?.contactImage ? (
-          <img
-            className="w-full md:max-w-[480px]"
+        <img
+          className="w-full md:max-w-[480px]"
             src={websiteInfo.contactImage}
-            alt="contact_img"
-          />
+          alt="contact_img"
+        />
         ) : (
           <div className="w-full md:max-w-[480px] h-64 bg-gray-200 animate-pulse rounded"></div>
         )}

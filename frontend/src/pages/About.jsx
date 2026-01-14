@@ -13,11 +13,11 @@ const About = () => {
       </div>
       <div className="my-10 flex flex-col md:flex-row gap-16">
         {websiteInfo?.aboutImage ? (
-          <img
-            className="w-full md:max-w-[450px]"
+        <img
+          className="w-full md:max-w-[450px]"
             src={websiteInfo.aboutImage}
-            alt="about_img"
-          />
+          alt="about_img"
+        />
         ) : (
           <div className="w-full md:max-w-[450px] h-64 bg-gray-200 animate-pulse rounded"></div>
         )}
