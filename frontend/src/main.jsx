@@ -3,7 +3,7 @@ import "./index.css";
 import App from "./App.jsx";
 import { BrowserRouter } from "react-router-dom";
 import ShopContextProvider from "./contexts/ShopContext.jsx";
-
+import ScrollToTop from "./components/ScrollToTop.jsx";
 import { ClerkProvider } from '@clerk/clerk-react'
 
 // Import your Publishable Key
@@ -14,6 +14,7 @@ if (!PUBLISHABLE_KEY) {
 }
 createRoot(document.getElementById('root')).render(
   <BrowserRouter>
+  <ScrollToTop/>
     <ClerkProvider publishableKey={PUBLISHABLE_KEY} afterSignOutUrl="/" telemetry={false}>
       <ShopContextProvider>
         <App />
