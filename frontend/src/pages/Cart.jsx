@@ -74,21 +74,40 @@ const Cart = () => {
                   </div>
                 </div>
               </div>
-              <input
-                className="border max-w-10 sm:max-w-20 px-1 sm:px-2 py-1"
-                type="number"
-                min={1}
-                defaultValue={item.quantity}
-                onChange={(e) =>
-                  e.target.value === "" || e.target.value === 0
-                    ? null
-                    : updateQuantity(
-                        item._id,
-                        item.size,
-                        Number(e.target.value)
-                      )
-                }
-              />
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  className="border px-2 py-1 select-none"
+                  onClick={() => updateQuantity(item._id, item.size, Math.max(1, item.quantity - 1))}
+                  disabled={item.quantity <= 1}
+                  title="Decrease"
+                >
+                  -
+                </button>
+
+                <input
+                  className="border w-14 text-center px-2 py-1"
+                  type="number"
+                  min={1}
+                  value={item.quantity}
+                  onChange={(e) => {
+                    const v = Number(e.target.value);
+                    if (!e.target.value) return; // allow clearing while typing
+                    if (Number.isNaN(v)) return;
+                    updateQuantity(item._id, item.size, Math.max(1, v));
+                  }}
+                />
+
+                <button
+                  type="button"
+                  className="border px-2 py-1 select-none"
+                  onClick={() => updateQuantity(item._id, item.size, item.quantity + 1)}
+                  title="Increase"
+                >
+                  +
+                </button>
+              </div>
+
               <svg
                 className="w-4 mr-4 sm:w-5 cursor-pointer"
                 fill="none"
