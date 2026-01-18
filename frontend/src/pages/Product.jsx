@@ -102,44 +102,45 @@ const Product = () => {
           </p>
           <div className="flex flex-col gap-4 my-8">
             <p>Select Size</p>
+
             <div className="flex gap-2 flex-wrap">
               {productData.sizes.map((item, index) => {
-                const stockCount = productData.stock && productData.stock[item] !== undefined
-                  ? productData.stock[item]
-                  : null;
-                const isOutOfStock = stockCount === 0 || stockCount === null;
+                const stockCount =
+                  productData.stock && typeof productData.stock[item] === "number"
+                    ? productData.stock[item]
+                    : 0; // ✅ treat missing as 0
+
+                const isOutOfStock = stockCount <= 0;
                 const isSelected = item === size;
 
                 return (
                   <button
-                    onClick={() => !isOutOfStock && setSize(item)}
                     key={index}
+                    type="button"
                     disabled={isOutOfStock}
-                    className={`border py-2 px-4 relative ${isOutOfStock
-                        ? "bg-gray-200 text-gray-400 cursor-not-allowed opacity-50"
+                    onClick={() => {
+                      if (isOutOfStock) return;     // ✅ extra safety
+                      setSize(item);
+                    }}
+                    className={`border py-2 px-4 ${isOutOfStock
+                        ? "bg-gray-200 text-gray-400 cursor-not-allowed opacity-60"
                         : isSelected
                           ? "border-orange-500 bg-orange-50"
-                          : "bg-gray-100 hover:bg-gray-200"
+                          : "bg-gray-100 hover:bg-gray-200 cursor-pointer"
                       }`}
-                    title={isOutOfStock ? "Out of stock" : `Stock: ${stockCount || "N/A"}`}
+                    title={isOutOfStock ? "Not available" : `Stock: ${stockCount}`}
                   >
                     {item}
-                    {stockCount !== null && stockCount !== undefined && (
-                      <span className={`ml-2 text-xs ${isOutOfStock ? "text-gray-400" : "text-gray-600"
-                        }`}>
-                        ({stockCount})
-                      </span>
-                    )}
+
+                    <span className={`ml-2 text-xs ${isOutOfStock ? "text-gray-400" : "text-gray-600"}`}>
+                      {isOutOfStock ? "(Not available)" : `(${stockCount})`}
+                    </span>
                   </button>
                 );
               })}
             </div>
-            {size && productData.stock && productData.stock[size] !== undefined && (
-              <p className="text-sm text-gray-600">
-                Available: <span className="font-medium">{productData.stock[size]} units</span>
-              </p>
-            )}
           </div>
+
           <button
             onClick={() => addToCart(productData._id, size)}
             className="bg-black text-white px-8 py-3 text-sm active:bg-gray-700"
