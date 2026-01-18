@@ -168,49 +168,66 @@ const List = ({ token }) => {
               <p
                 className="cursor-pointer underline-offset-2 hover:underline text-xs"
                 onClick={async () => {
-                  // Show current stock and allow editing
                   const currentStock = item.stock || {};
                   let stockInput = "";
 
-                  // Create input string showing current stock
                   if (item.sizes && item.sizes.length > 0) {
-                    const stockLines = item.sizes.map(size => {
-                      const current = currentStock[size] || 0;
+                    const stockLines = item.sizes.map((size) => {
+                      const current = currentStock[size] ?? 0;
                       return `${size}:${current}`;
                     });
                     stockInput = stockLines.join("\n");
                   }
 
                   const newStockStr = window.prompt(
-                    `Update stock for each size (format: S:10 M:5 L:8, one per line):\n\nCurrent:\n${stockInput || "No stock set"}`,
+                    `Update stock (one per line like: S:10)\nYou can add new sizes too (e.g. XL:0)\n\nCurrent:\n${stockInput || "No stock set"}`,
                     stockInput
                   );
 
                   if (newStockStr === null) return;
 
-                  // Parse the input
                   const newStock = {};
                   const lines = newStockStr.split("\n");
 
                   for (const line of lines) {
-                    const match = line.trim().match(/^([SMLXLXXL]+):(\d+)$/i);
-                    if (match) {
-                      const size = match[1].toUpperCase();
-                      const count = parseInt(match[2]);
-                      if (!isNaN(count) && count >= 0) {
-                        newStock[size] = count;
-                      }
+                    const trimmed = line.trim();
+                    if (!trimmed) continue;
+
+                    const [rawSize, rawCount] = trimmed.split(":").map((s) => s.trim());
+                    if (!rawSize || rawCount === undefined) continue;
+
+                    const size = rawSize.toUpperCase();
+                    const count = Number(rawCount);
+
+                    if (!Number.isNaN(count) && count >= 0) {
+                      newStock[size] = count;
                     }
                   }
+
+                  if (Object.keys(newStock).length === 0) {
+                    toast.error("Please enter at least one size like S:10");
+                    return;
+                  }
+
+                  const order = ["S", "M", "L", "XL", "XXL"];
+                  const newSizes = Object.keys(newStock).sort((a, b) => {
+                    const ai = order.indexOf(a);
+                    const bi = order.indexOf(b);
+                    if (ai === -1 && bi === -1) return a.localeCompare(b);
+                    if (ai === -1) return 1;
+                    if (bi === -1) return -1;
+                    return ai - bi;
+                  });
 
                   try {
                     const response = await axios.post(
                       backendUrl + "/api/product/update",
-                      { id: item._id, stock: newStock },
+                      { id: item._id, stock: newStock, sizes: newSizes },
                       { headers: { token } }
                     );
+
                     if (response.data.success) {
-                      toast.success("Stock updated");
+                      toast.success("Stock & sizes updated");
                       fetchList();
                     } else {
                       toast.error(response.data.message);
@@ -220,6 +237,7 @@ const List = ({ token }) => {
                     toast.error(error.message);
                   }
                 }}
+
                 title="Click to update stock"
               >
                 {stockDisplay}
@@ -251,8 +269,8 @@ const List = ({ token }) => {
                   }
                 }}
                 className={`px-2 py-1 rounded text-xs ${item.bestseller
-                    ? "bg-green-100 text-green-700"
-                    : "bg-gray-100 text-gray-700"
+                  ? "bg-green-100 text-green-700"
+                  : "bg-gray-100 text-gray-700"
                   }`}
               >
                 {item.bestseller ? "Bestseller" : "Make Bestseller"}

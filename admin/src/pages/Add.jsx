@@ -37,7 +37,11 @@ const Add = ({ token }) => {
       formData.append("subCategory", subCategory);
       formData.append("bestseller", bestseller);
       formData.append("sizes", JSON.stringify(sizes));
-      formData.append("stock", JSON.stringify(stock));
+      formData.append("stock", JSON.stringify(
+        Object.fromEntries(
+          Object.entries(stock).map(([k, v]) => [k, Number(v) || 0])
+        )
+      ));
 
       image1 && formData.append("image1", image1);
       image2 && formData.append("image2", image2);
@@ -310,15 +314,16 @@ const Add = ({ token }) => {
                     type="number"
                     min="0"
                     placeholder="0"
-                    value={stock[size] || ""}
+                    value={stock[size] ?? ""}   // ✅ allows 0
                     onChange={(e) =>
                       setStock((prev) => ({
                         ...prev,
-                        [size]: parseInt(e.target.value) || 0,
+                        [size]: e.target.value === "" ? "" : Number(e.target.value), // optional but cleaner
                       }))
                     }
                     required
                   />
+
                   <span className="text-sm text-gray-500">units</span>
                 </div>
               ))}
