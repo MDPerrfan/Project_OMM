@@ -13,6 +13,7 @@ const addProduct = async (req, res) => {
       bestseller,
       sizes,
       stock,
+      discountPercent,
     } = req.body;
 
     const image1 = req.files.image1 && req.files.image1[0];
@@ -70,7 +71,7 @@ const addProduct = async (req, res) => {
       sizes: JSON.parse(sizes.replace(/'/g, '"')),
       stock: stockData,
       image: imagesUrl,
-      date: Date.now(),
+      discountPercent: discountPercent !== undefined ? Number(discountPercent) : 0,      date: Date.now(),
     };
 
     const product = new productModel(productData);
@@ -104,6 +105,7 @@ const updateProduct = async (req, res) => {
       bestseller,
       sizes,
       stock,
+      discountPercent,
     } = req.body;
 
     if (!id) {
@@ -130,6 +132,11 @@ const updateProduct = async (req, res) => {
         updateData.sizes = sizes;
       }
     }
+    if (discountPercent !== undefined) {
+      const dp = Number(discountPercent);
+      updateData.discountPercent = isNaN(dp) ? 0 : Math.min(100, Math.max(0, dp));
+    }
+    
     if (stock !== undefined) {
       // Allow stock to come as JSON string or object
       if (typeof stock === "string") {

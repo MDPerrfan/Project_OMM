@@ -13,6 +13,8 @@ const productSchema = new mongoose.Schema({
   // Stock count for each size: { "S": 10, "M": 5, "L": 8 }
   stock: { type: Object, default: {} },
   date: { type: Number, required: true },
+  discountPercent: { type: Number, default: 0, min: 0, max: 100 },
+
 });
 
 const productModel =

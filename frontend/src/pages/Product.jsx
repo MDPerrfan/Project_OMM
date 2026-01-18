@@ -69,12 +69,34 @@ const Product = () => {
             <svg className="w-3.5 h-3.5 text-gray-300 fill-current" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
               <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
             </svg>
-            <p className="pl-2">122</p>
           </div>
-          <p className="mt-5 text-3xl font-medium">
-            {currency}
-            {productData.price}
-          </p>
+          {(() => {
+            const dp = Number(productData.discountPercent || 0);
+            const hasDiscount = dp > 0;
+            const discountedPrice = hasDiscount
+              ? Math.round(productData.price * (1 - dp / 100))
+              : productData.price;
+
+            return (
+              <div className="mt-5 flex items-end gap-3">
+                <p className="text-3xl font-medium">
+                  {currency}{discountedPrice}
+                </p>
+
+                {hasDiscount && (
+                  <>
+                    <p className="text-lg text-gray-500 line-through">
+                      {currency}{productData.price}
+                    </p>
+                    <span className="text-sm font-medium text-green-600">
+                      -{dp}%
+                    </span>
+                  </>
+                )}
+              </div>
+            );
+          })()}
+
           <p className="mt-5 text-gray-500 md:w-4/5">
             {productData.description}
           </p>
@@ -82,31 +104,29 @@ const Product = () => {
             <p>Select Size</p>
             <div className="flex gap-2 flex-wrap">
               {productData.sizes.map((item, index) => {
-                const stockCount = productData.stock && productData.stock[item] !== undefined 
-                  ? productData.stock[item] 
+                const stockCount = productData.stock && productData.stock[item] !== undefined
+                  ? productData.stock[item]
                   : null;
                 const isOutOfStock = stockCount === 0 || stockCount === null;
                 const isSelected = item === size;
-                
+
                 return (
                   <button
                     onClick={() => !isOutOfStock && setSize(item)}
                     key={index}
                     disabled={isOutOfStock}
-                    className={`border py-2 px-4 relative ${
-                      isOutOfStock
+                    className={`border py-2 px-4 relative ${isOutOfStock
                         ? "bg-gray-200 text-gray-400 cursor-not-allowed opacity-50"
                         : isSelected
-                        ? "border-orange-500 bg-orange-50"
-                        : "bg-gray-100 hover:bg-gray-200"
-                    }`}
+                          ? "border-orange-500 bg-orange-50"
+                          : "bg-gray-100 hover:bg-gray-200"
+                      }`}
                     title={isOutOfStock ? "Out of stock" : `Stock: ${stockCount || "N/A"}`}
                   >
                     {item}
                     {stockCount !== null && stockCount !== undefined && (
-                      <span className={`ml-2 text-xs ${
-                        isOutOfStock ? "text-gray-400" : "text-gray-600"
-                      }`}>
+                      <span className={`ml-2 text-xs ${isOutOfStock ? "text-gray-400" : "text-gray-600"
+                        }`}>
                         ({stockCount})
                       </span>
                     )}
@@ -138,19 +158,19 @@ const Product = () => {
       <div className="mt-20">
         <div className="flex">
           <b className="border px-5 py-3 text-sm">Description</b>
-          <p className="border px-5 py-3 text-sm">Reviews (0)</p>
         </div>
         <div className="flex flex-col gap-4 border px-6 py-6 text-sm text-gray-500">
-        <p className="mt-5 text-gray-500 md:w-4/5">
+          <p className="mt-5 text-gray-500 md:w-4/5">
             {productData.description}
-        </p>
-  
+          </p>
+
         </div>
       </div>
       {/* display related products */}
       <RelatedProducts
         category={productData.category}
         subCategory={productData.subCategory}
+        discountPercent={productData.discountPercent}
       />
     </div>
   ) : (
