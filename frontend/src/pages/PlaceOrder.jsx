@@ -183,13 +183,12 @@ const PlaceOrder = () => {
             required
             className="border border-gray-300 rounded py-1.5 px-3.5 w-full"
             type="text"
-            placeholder="First Name"
+            placeholder="First Name*"
             onChange={onChangeHandler}
             name="firstName"
             value={formData.firstName}
           />
           <input
-            required
             className="border border-gray-300 rounded py-1.5 px-3.5 w-full"
             type="text"
             placeholder="Last Name"
@@ -199,7 +198,6 @@ const PlaceOrder = () => {
           />
         </div>
         <input
-          required
           className="border border-gray-300 rounded py-1.5 px-3.5 w-full"
           type="email"
           placeholder="Email Address"
@@ -210,7 +208,7 @@ const PlaceOrder = () => {
         <textarea
           required
           className="border border-gray-300 rounded py-1.5 px-3.5 w-full"
-          placeholder="Full Address"
+          placeholder="Full Address*"
           onChange={onChangeHandler}
           name="fullAddress"
           value={formData.fullAddress}
@@ -232,7 +230,6 @@ const PlaceOrder = () => {
             ))}
           </select>
           <input
-            required
             className="border border-gray-300 rounded py-1.5 px-3.5 w-full"
             type="text"
             placeholder="City"
@@ -243,7 +240,6 @@ const PlaceOrder = () => {
         </div>
         <div className="flex gap-3">
           <input
-            required
             className="border border-gray-300 rounded py-1.5 px-3.5 w-full"
             type="number"
             placeholder="Zipcode"
@@ -252,7 +248,6 @@ const PlaceOrder = () => {
             value={formData.zipcode}
           />
           <input
-            required
             className="border border-gray-300 rounded py-1.5 px-3.5 w-full"
             type="text"
             placeholder="Country"
@@ -265,7 +260,7 @@ const PlaceOrder = () => {
           required
           className="border border-gray-300 rounded py-1.5 px-3.5 w-full"
           type="number"
-          placeholder="Phone"
+          placeholder="Phone*"
           onChange={onChangeHandler}
           name="phone"
           value={formData.phone}
