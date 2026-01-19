@@ -10,18 +10,26 @@ const ShopContextProvider = ({ children }) => {
   const currency = "৳";
   const deliveryFee = 0;
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
+  // ✅ Product loading error state
+  const [productsError, setProductsError] = useState(false);
+
   const [search, setSearch] = useState("");
   const [showSearch, setShowSearch] = useState(false);
   const [cartItems, setCartItems] = useState({});
   const [products, setProducts] = useState([]);
+
   const [token, setToken] = useState(
     localStorage.getItem("token") ? localStorage.getItem("token") : ""
   );
+
   const [guestId] = useState(getGuestId());
   const [websiteInfo, setWebsiteInfo] = useState(null);
+
   const [loadingProducts, setLoadingProducts] = useState(true);
   const [loadingCart, setLoadingCart] = useState(true);
   const [loadingWebsiteInfo, setLoadingWebsiteInfo] = useState(true);
+
   const navigate = useNavigate();
 
   const addToCart = async (itemId, size) => {
@@ -41,6 +49,7 @@ const ShopContextProvider = ({ children }) => {
       cartData[itemId] = {};
       cartData[itemId][size] = 1;
     }
+
     setCartItems(cartData);
     toast.success("Item added to cart");
 
@@ -108,18 +117,24 @@ const ShopContextProvider = ({ children }) => {
     return totalAmount;
   };
 
-  const getProductsData = async () => {
+  // ✅ Rename to fetchProducts so UI can call it on "Try Again"
+  const fetchProducts = async () => {
     try {
       setLoadingProducts(true);
+      setProductsError(false); // ✅ clear error when retrying
+
       const response = await axios.get(backendUrl + "/api/product/list");
 
       if (response.data.success) {
         setProducts(response.data.products);
+        setProductsError(false); // ✅ success
       } else {
+        setProductsError(true);
         toast.error(response.data.message);
       }
     } catch (error) {
       console.log(error);
+      setProductsError(true); // ✅ network/server error
       toast.error(error.message);
     } finally {
       setLoadingProducts(false);
@@ -135,7 +150,7 @@ const ShopContextProvider = ({ children }) => {
       }
     } catch (error) {
       console.log(error);
-      // Don't show error toast for website info as it's not critical
+      // website info is optional, so no toast
     } finally {
       setLoadingWebsiteInfo(false);
     }
@@ -166,7 +181,7 @@ const ShopContextProvider = ({ children }) => {
   }, [token]);
 
   useEffect(() => {
-    getProductsData();
+    fetchProducts();
     getUserCart(token);
     getWebsiteInfo();
   }, []);
@@ -175,25 +190,35 @@ const ShopContextProvider = ({ children }) => {
     products,
     currency,
     deliveryFee,
+
     search,
     setSearch,
     showSearch,
     setShowSearch,
+
     cartItems,
     setCartItems,
     addToCart,
     getCartCount,
     updateQuantity,
     getCartAmount,
+
     navigate,
     backendUrl,
+
     token,
     setToken,
     guestId,
+
     websiteInfo,
+
     loadingProducts,
     loadingCart,
     loadingWebsiteInfo,
+
+    // ✅ expose error + retry function
+    productsError,
+    fetchProducts,
   };
 
   return <ShopContext.Provider value={value}>{children}</ShopContext.Provider>;

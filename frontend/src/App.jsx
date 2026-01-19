@@ -1,4 +1,6 @@
-import React from "react";
+import React, { useContext } from "react";
+import { ShopContext } from "./contexts/ShopContext";
+import ServiceUnavailable from "./components/ServiceUnavailable";
 import { Routes, Route } from "react-router-dom";
 import { SpeedInsights } from "@vercel/speed-insights/react";
 import { Analytics } from "@vercel/analytics/react";
@@ -20,6 +22,7 @@ import "react-toastify/ReactToastify.css";
 import Verify from "./pages/Verify";
 
 const App = () => {
+ 
   return (
     <div className="px-4 sm:px-[5vw] md:px-[7vw] lg:px-[9vw]">
       <ToastContainer />

@@ -1,12 +1,11 @@
-import React, { useContext, useMemo } from "react";
-import { ShopContext } from "../contexts/ShopContext";
+import React, { useMemo,useContext } from "react";
 import Title from "../components/Title";
 import ProductItem from "../components/ProductItem";
 import ProductGridSkeleton from "../components/ProductGridSkeleton";
-
+import { ShopContext } from "../contexts/ShopContext";
+import ServiceUnavailable from "../components/ServiceUnavailable";
 const Sell = () => {
-  const { products, loadingProducts } = useContext(ShopContext);
-
+const { products,loadingProducts,productsError,fetchProducts} = useContext(ShopContext);
   const discountedProducts = useMemo(() => {
     return (products || [])
       .filter((p) => Number(p.discountPercent || 0) > 0)
@@ -14,6 +13,9 @@ const Sell = () => {
       .sort((a, b) => Number(b.discountPercent || 0) - Number(a.discountPercent || 0));
   }, [products]);
 
+  if (productsError) {
+    return <ServiceUnavailable onRetry={fetchProducts} />;
+  }
   return (
     <div className="border-t pt-10">
       <div className="text-center py-8 text-3xl">
@@ -36,7 +38,9 @@ const Sell = () => {
               image={item.image}
               name={item.name}
               price={item.price}
-              discountPercent={item.discountPercent} // ✅ make sure ProductItem supports this prop
+              discountPercent={item.discountPercent} 
+              sizes={item.sizes}
+              stock={item.stocks}// ✅ make sure ProductItem supports this prop
             />
           ))}
         </div>

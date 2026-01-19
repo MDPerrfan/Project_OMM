@@ -33,6 +33,8 @@ const BestSeller = () => {
             name={item.name}
             price={item.price}
             discountPercent={item.discountPercent}
+            stock={item.stock}
+            sizes={item.sizes}
           />
         ))}
       </div>

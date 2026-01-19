@@ -1,11 +1,12 @@
 import React, { useContext, useEffect, useState } from "react";
+import ServiceUnavailable from "../components/ServiceUnavailable.jsx";
 import { ShopContext } from "../contexts/ShopContext";
 import Title from "../components/Title";
 import ProductItem from "../components/ProductItem";
 import ProductGridSkeleton from "../components/ProductGridSkeleton";
 
 const Collection = () => {
-  const { products, search, showSearch, loadingProducts } = useContext(ShopContext);
+  const { products, search, showSearch, loadingProducts,productsError,fetchProducts} = useContext(ShopContext);
   const [showFilter, setShowFilter] = useState(false);
   const [filterProducts, setFilterProducts] = useState([]);
   const [category, setCategory] = useState([]);
@@ -75,6 +76,10 @@ const Collection = () => {
     sortProduct();
   }, [sortType]);
 
+  // ✅ show only after loading finishes
+  if (!loadingProducts && productsError) {
+    return <ServiceUnavailable onRetry={fetchProducts} />;
+  }
   return (
     <div className="flex flex-col sm:flex-row gap-1 sm:gap-10 pt-10 border-t">
       {/* Filter options */}
@@ -189,14 +194,16 @@ const Collection = () => {
         ) : (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 gap-y-6">
           {filterProducts.map((item, index) => (
-            <ProductItem
-              key={index}
-              id={item._id}
-              name={item.name}
-              price={item.price}
-              image={item.image}
-              discountPercent={item.discountPercent}
-            />
+                <ProductItem
+                key={index}
+                id={item._id}
+                image={item.image}
+                name={item.name}
+                price={item.price}
+                discountPercent={item.discountPercent}
+                stock={item.stocks}
+                sizes={item.sizes}
+              />
           ))}
         </div>
         )}
