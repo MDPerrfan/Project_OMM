@@ -201,7 +201,7 @@ const Collection = () => {
                 name={item.name}
                 price={item.price}
                 discountPercent={item.discountPercent}
-                stock={item.stocks}
+                stock={item.stock}
                 sizes={item.sizes}
               />
           ))}
