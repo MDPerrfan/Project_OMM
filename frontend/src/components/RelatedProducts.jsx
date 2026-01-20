@@ -26,11 +26,19 @@ const RelatedProducts = ({ category, subCategory }) => {
         {loadingProducts ? (
           <ProductGridSkeleton count={5} />
         ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 gap-y-6">
-            {related.map((item, index)=>(
-                <ProductItem key={index} id={item._id} name={item.name} price={item.price} image={item.image} discountPercent={item.discountPercent} sizes={item.sizes} stock={item.stocks}/>
-            ))}
-        </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 gap-y-6">
+            {related.map((item, index) => (
+              <ProductItem
+                key={index}
+                id={item._id}
+                image={item.image}
+                name={item.name}
+                price={item.price}
+                discountPercent={item.discountPercent}
+                stock={item.stock}
+                sizes={item.sizes}
+              />))}
+          </div>
         )}
       </div>
     </div>

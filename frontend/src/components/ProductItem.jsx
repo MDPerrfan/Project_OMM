@@ -24,7 +24,7 @@ const ProductItem = ({ id, image, name, price, discountPercent = 0, stock = {}, 
       <div className="relative overflow-hidden rounded-md">
         {/* SALE badge */}
         {hasDiscount && (
-          <div className="absolute top-2 left-1/2 -translate-x-1/2 z-10">
+          <div className="absolute top-2 right-1/2 -translate-x-1/2 z-10">
             <span className="bg-black text-white text-xs px-3 py-1 rounded-full tracking-wide">
               SALE
             </span>
