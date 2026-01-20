@@ -133,9 +133,37 @@ const Product = () => {
             );
           })()}
 
-          <p className="mt-5 text-gray-500 md:w-4/5">
-            {productData.description}
-          </p>
+          <div className="mt-5 md:w-4/5">
+            {(() => {
+              const lines = productData.description
+                .split("\n")
+                .filter(line => line.trim() !== "");
+
+              if (!lines.length) return null;
+
+              const [headline, ...rest] = lines;
+
+              return (
+                <>
+                  {/* 🔥 First line (headline) */}
+                  <p className="text-xl font-bold text-gray-900 mb-4">
+                    {headline}
+                  </p>
+
+                  {/* 📄 Remaining description */}
+                  <div className="text-gray-600 space-y-4 leading-relaxed">
+                    {rest.map((line, i) => (
+                      <p key={i} className="first-letter:text-orange-600 first-letter:text-2xl first-letter:font-bold">
+                        {line}
+                      </p>
+                    ))}
+                  </div>
+                </>
+              );
+            })()}
+          </div>
+
+
 
           {/* 📦 Sizes */}
           <div className="flex flex-col gap-4 my-8">
@@ -157,10 +185,10 @@ const Product = () => {
                     disabled={isOutOfStock}
                     onClick={() => !isOutOfStock && setSize(item)}
                     className={`border py-2 px-4 relative overflow-hidden ${isOutOfStock
-                        ? "bg-gray-100 text-gray-400 cursor-not-allowed opacity-70"
-                        : isSelected
-                          ? "border-orange-500 bg-orange-50"
-                          : "bg-gray-100 hover:bg-gray-200"
+                      ? "bg-gray-100 text-gray-400 cursor-not-allowed opacity-70"
+                      : isSelected
+                        ? "border-orange-500 bg-orange-50"
+                        : "bg-gray-100 hover:bg-gray-200"
                       }`}
                     title={
                       isOutOfStock
@@ -174,8 +202,8 @@ const Product = () => {
                     {stockCount !== null && (
                       <span
                         className={`ml-2 text-xs ${isOutOfStock
-                            ? "text-gray-400"
-                            : "text-gray-600"
+                          ? "text-gray-400"
+                          : "text-gray-600"
                           }`}
                       >
                         ({stockCount})
@@ -233,7 +261,7 @@ const Product = () => {
           </button>
 
           <div
-              className="relative w-[75vw] h-[85vh] overflow-hidden
+            className="relative w-[75vw] h-[85vh] overflow-hidden
               flex items-center justify-center
               pt-[env(safe-area-inset-top)]"
             onWheel={(e) => {
