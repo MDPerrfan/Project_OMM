@@ -233,7 +233,9 @@ const Product = () => {
           </button>
 
           <div
-            className="relative w-[75vw] h-[85vh] overflow-hidden"
+              className="relative w-[75vw] h-[85vh] overflow-hidden
+              flex items-center justify-center
+              pt-[env(safe-area-inset-top)]"
             onWheel={(e) => {
               e.preventDefault();
               setZoomLevel((z) =>
