@@ -49,9 +49,28 @@ app.use(express.json());
 //     allowedHeaders: ["Content-Type", "Authorization", "token"]
 // }));
 app.use(cors({
-    origin: "*", 
-    credentials: true
+    origin: function(origin, callback) {
+        // Allow if no origin (for mobile apps/server-side calls)
+        if (!origin) return callback(null, true);
+
+        // Allow if in your explicit list OR any vercel subdomain
+        const isAllowed = allowedOrigins.includes(origin);
+        const isVercel = origin.endsWith(".vercel.app");
+
+        if (isAllowed || isVercel) {
+            callback(null, true);
+        } else {
+            console.log("Blocked by CORS:", origin);
+            callback(new Error("Not allowed by CORS"));
+        }
+    },
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization", "token"]
 }));
+
+// MUST add this for preflight POST requests
+app.options('*', cors());
 // Api Endpoints
 app.use("/api/user", userRouter);
 app.use("/api/product", productRouter);
