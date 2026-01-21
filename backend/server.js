@@ -9,84 +9,70 @@ import cartRouter from "./routes/cartRoute.js";
 import orderRouter from "./routes/orderRoute.js";
 import websiteInfoRouter from "./routes/websiteInfoRoute.js";
 
-// App Config
 const app = express();
 
-// 1. Updated CORS configuration with ALL domain variations
+// Allowed origins
 const allowedOrigins = [
-    "https://ommverse.vercel.app",
-    "https://omm-admin.vercel.app",
-    "https://ommverse.com",
-    "https://www.ommverse.com", // Added www version
-    "http://localhost:3000",
-    "http://localhost:5173",
-    "http://localhost:5174",
-    "https://omm-admin.netlify.app"
+  "https://ommverse.vercel.app",
+  "https://omm-admin.vercel.app",
+  "https://ommverse.com",
+  "https://www.ommverse.com",
+  "http://localhost:3000",
+  "http://localhost:5173",
+  "http://localhost:5174",
+  "https://omm-admin.netlify.app",
 ];
 
-// Connect DB & Cloudinary
+// Connect services
 connectDB();
 connectCloudinary();
 
-// 2. Middlewares
+// Middlewares
 app.use(express.json());
 
-// // Fixed CORS implementation
-// app.use(cors({
-//     origin: function(origin, callback) {
-//         // Allow requests with no origin (like mobile apps)
-//         if (!origin) return callback(null, true);
+// ✅ Single, normalized CORS config
+const corsOptions = {
+  origin: function (origin, callback) {
+    if (!origin) return callback(null, true);
 
-//         if (allowedOrigins.includes(origin)) {
-//             callback(null, true);
-//         } else {
-//             console.log("Blocked by CORS:", origin); // Helps debugging in Vercel Logs
-//             callback(new Error("Not allowed by CORS"));
-//         }
-//     },
-//     credentials: true,
-//     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-//     allowedHeaders: ["Content-Type", "Authorization", "token"]
-// }));
-app.use(cors({
-    origin: function(origin, callback) {
-        // Allow if no origin (for mobile apps/server-side calls)
-        if (!origin) return callback(null, true);
+    try {
+      const normalizedOrigin = new URL(origin).origin;
 
-        // Allow if in your explicit list OR any vercel subdomain
-        const isAllowed = allowedOrigins.includes(origin);
-        const isVercel = origin.endsWith(".vercel.app");
+      if (
+        allowedOrigins.includes(normalizedOrigin) ||
+        normalizedOrigin.endsWith(".vercel.app")
+      ) {
+        return callback(null, true);
+      }
 
-        if (isAllowed || isVercel) {
-            callback(null, true);
-        } else {
-            console.log("Blocked by CORS:", origin);
-            callback(new Error("Not allowed by CORS"));
-        }
-    },
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization", "token"]
-}));
+      console.log("Blocked by CORS:", normalizedOrigin);
+      return callback(new Error("Not allowed by CORS"));
+    } catch (err) {
+      console.log("Invalid origin:", origin);
+      return callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization", "token"],
+};
 
-// MUST add this for preflight POST requests
-app.options('*', cors());
-// Api Endpoints
+// Apply CORS ONCE
+app.use(cors(corsOptions));
+
+// Preflight uses SAME rules
+app.options("*", cors(corsOptions));
+
+// Routes
 app.use("/api/user", userRouter);
 app.use("/api/product", productRouter);
 app.use("/api/cart", cartRouter);
 app.use("/api/order", orderRouter);
 app.use("/api/website", websiteInfoRouter);
-// Look for something like this:
-const PORT = process.env.PORT || 4000;
 
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-});
 app.get("/", (req, res) => {
-    res.send("API WORKING");
+  res.send("API WORKING");
 });
 
-// 3. Vercel Export
-// In Serverless environments, we export the app instead of calling .listen()
+// ❌ DO NOT app.listen() on Vercel
 export default app;
