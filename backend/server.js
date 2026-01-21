@@ -30,24 +30,27 @@ connectCloudinary();
 // 2. Middlewares
 app.use(express.json());
 
-// Fixed CORS implementation
+// // Fixed CORS implementation
+// app.use(cors({
+//     origin: function(origin, callback) {
+//         // Allow requests with no origin (like mobile apps)
+//         if (!origin) return callback(null, true);
+
+//         if (allowedOrigins.includes(origin)) {
+//             callback(null, true);
+//         } else {
+//             console.log("Blocked by CORS:", origin); // Helps debugging in Vercel Logs
+//             callback(new Error("Not allowed by CORS"));
+//         }
+//     },
+//     credentials: true,
+//     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+//     allowedHeaders: ["Content-Type", "Authorization", "token"]
+// }));
 app.use(cors({
-    origin: function(origin, callback) {
-        // Allow requests with no origin (like mobile apps)
-        if (!origin) return callback(null, true);
-
-        if (allowedOrigins.includes(origin)) {
-            callback(null, true);
-        } else {
-            console.log("Blocked by CORS:", origin); // Helps debugging in Vercel Logs
-            callback(new Error("Not allowed by CORS"));
-        }
-    },
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization", "token"]
+    origin: "*", 
+    credentials: true
 }));
-
 // Api Endpoints
 app.use("/api/user", userRouter);
 app.use("/api/product", productRouter);
