@@ -65,11 +65,12 @@ const Add = ({ token }) => {
 
       // ✅ Loop through and compress images
       // Your backend expects image1, image2, image3, image4
+      // In your frontend onSubmitHandler:
       for (let i = 0; i < images.length; i++) {
         const compressed = await handleImageCompression(images[i]);
-        formData.append(`image${i + 1}`, compressed);
+        // Use "images" for every file - Multer .array() will group them
+        formData.append("images", compressed);
       }
-
       const response = await axios.post(
         backendUrl + "/api/product/add",
         formData,

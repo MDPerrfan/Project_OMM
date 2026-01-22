@@ -16,25 +16,19 @@ const addProduct = async (req, res) => {
       discountPercent,
     } = req.body;
 
-    const image1 = req.files.image1 && req.files.image1[0];
-    const image2 = req.files.image2 && req.files.image2[0];
-    const image3 = req.files.image3 && req.files.image3[0];
-    const image4 = req.files.image4 && req.files.image4[0];
+    const files = req.files || [];
 
-    const images = [image1, image2, image3, image4].filter(
-      (item) => item !== undefined
-    );
-
+    // Map through the files and upload to Cloudinary
     let imagesUrl = await Promise.all(
-      images.map(async (item) => {
+      files.map(async (item) => {
         try {
-          // Check file size (10MB limit)
+          // Keep your size check logic
           const fs = await import("fs");
           const stats = fs.statSync(item.path);
           const fileSizeInMB = stats.size / (1024 * 1024);
           
           if (fileSizeInMB > 10) {
-            throw new Error(`File size (${fileSizeInMB.toFixed(2)}MB) exceeds 10MB limit. Please use a smaller file.`);
+            throw new Error(`File exceeds 10MB limit.`);
           }
 
           let result = await cloudinary.uploader.upload(item.path, {
@@ -42,11 +36,7 @@ const addProduct = async (req, res) => {
           });
           return result.secure_url;
         } catch (error) {
-          // Handle Cloudinary errors
-          if (error.http_code === 400 || error.message.includes("File size") || error.message.includes("too large")) {
-            throw new Error("File size is too large. Please use an image smaller than 10MB.");
-          }
-          throw error;
+          throw new Error("Cloudinary Upload Failed: " + error.message);
         }
       })
     );
