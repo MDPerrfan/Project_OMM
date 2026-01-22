@@ -16,8 +16,9 @@ const addProduct = async (req, res) => {
       discountPercent,
     } = req.body;
 
-    const files = req.files || [];
-
+    const files = Array.isArray(req.files) 
+    ? req.files 
+    : Object.values(req.files).flat();
     // Map through the files and upload to Cloudinary
     let imagesUrl = await Promise.all(
       files.map(async (item) => {

@@ -33,10 +33,10 @@ const Add = ({ token }) => {
 
   const onFileChange = (e) => {
     const selectedFiles = Array.from(e.target.files);
-    if (selectedFiles.length > 4) {
+    if (selectedFiles.length > 8) {
       toast.error("You can only upload up to 4 images");
       // Take only the first 4
-      setImages(selectedFiles.slice(0, 4));
+      setImages(selectedFiles.slice(0, 8));
     } else {
       setImages(selectedFiles);
     }
@@ -101,11 +101,11 @@ const Add = ({ token }) => {
       {loading && <Loading message="Optimizing & Adding product..." />}
       <form onSubmit={onSubmitHandler} className="flex flex-col w-full items-start gap-3">
         <div>
-          <p className="mb-2">Upload Images (Max 4)</p>
+          <p className="mb-2">Upload Images (Max x 8)</p>
           <div className="flex flex-wrap gap-2">
             <label className="cursor-pointer border-2 border-dashed border-gray-300 p-4 w-40 h-40 flex flex-col items-center justify-center hover:bg-gray-50" htmlFor="images">
               <img className="w-10 mb-2" src={assets.upload_area} alt="" />
-              <p className="text-xs text-gray-500 text-center">Click to select up to 4 photos</p>
+              <p className="text-xs text-gray-500 text-center">Click to select up to 8 photos</p>
               <input
                 onChange={onFileChange}
                 type="file"
