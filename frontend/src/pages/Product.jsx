@@ -250,7 +250,7 @@ const Product = () => {
         discountPercent={productData.discountPercent}
       />
 
-      {/* 🔍 ZOOM MODAL */}
+      {/* 🔍 ZOOM MODAL
       {isZoomOpen && (
         <div className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center">
           <button
@@ -305,6 +305,97 @@ const Product = () => {
                   : "grab",
               }}
             />
+          </div>
+        </div>
+      )} */}
+      {isZoomOpen && (
+        <div className="fixed inset-0 z-[100] bg-black/95 flex flex-col items-center justify-center backdrop-blur-sm">
+
+          {/* Top Header/Controls */}
+          <div className="absolute top-0 w-full p-6 flex justify-between items-center z-[110] bg-gradient-to-b from-black/60 to-transparent">
+            <div className="flex gap-4">
+              <button
+                className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center border border-white/20 backdrop-blur-md transition-all active:scale-90"
+                onClick={() => setZoomLevel(prev => Math.min(prev + 0.5, 4))}
+                title="Zoom In"
+              >
+                <span className="text-2xl font-light">+</span>
+              </button>
+              <button
+                className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center border border-white/20 backdrop-blur-md transition-all active:scale-90"
+                onClick={() => setZoomLevel(prev => Math.max(prev - 0.5, 1))}
+                title="Zoom Out"
+              >
+                <span className="text-2xl font-light">−</span>
+              </button>
+              <button
+                className="px-4 h-10 rounded-full bg-white/10 hover:bg-white/20 text-white text-xs uppercase tracking-widest border border-white/20 backdrop-blur-md transition-all"
+                onClick={() => { setZoomLevel(1); setPosition({ x: 0, y: 0 }); }}
+              >
+                Reset
+              </button>
+            </div>
+
+            <button
+              className="w-10 h-10 rounded-full bg-orange-600 hover:bg-orange-500 text-white flex items-center justify-center shadow-lg transition-all active:scale-90"
+              onClick={() => setIsZoomOpen(false)}
+            >
+              <span className="text-xl">✕</span>
+            </button>
+          </div>
+
+          {/* Interaction Area */}
+          <div
+            className="w-full h-full flex items-center justify-center overflow-hidden touch-none"
+            onWheel={(e) => {
+              const delta = e.deltaY < 0 ? 0.2 : -0.2;
+              setZoomLevel(z => Math.min(4, Math.max(1, z + delta)));
+            }}
+            onMouseDown={(e) => {
+              setIsDragging(true);
+              dragStart.current = { x: e.clientX - position.x, y: e.clientY - position.y };
+            }}
+            onMouseMove={(e) => {
+              if (!isDragging) return;
+              setPosition({ x: e.clientX - dragStart.current.x, y: e.clientY - dragStart.current.y });
+            }}
+            onMouseUp={() => setIsDragging(false)}
+            onMouseLeave={() => setIsDragging(false)}
+            // ✅ Mobile Touch Support
+            onTouchStart={(e) => {
+              if (e.touches.length === 1) {
+                setIsDragging(true);
+                dragStart.current = { x: e.touches[0].clientX - position.x, y: e.touches[0].clientY - position.y };
+              }
+            }}
+            onTouchMove={(e) => {
+              if (!isDragging || e.touches.length !== 1) return;
+              setPosition({ x: e.touches[0].clientX - dragStart.current.x, y: e.touches[0].clientY - dragStart.current.y });
+            }}
+            onTouchEnd={() => setIsDragging(false)}
+          >
+            <div
+              className="transition-transform duration-200 ease-out flex items-center justify-center"
+              style={{
+                transform: `translate(${position.x}px, ${position.y}px)`,
+              }}
+            >
+              <img
+                src={image}
+                alt="Zoomed Product"
+                draggable={false}
+                className="max-w-[90vw] max-h-[80vh] object-contain shadow-2xl rounded-sm transition-transform duration-200"
+                style={{
+                  transform: `scale(${zoomLevel})`,
+                  cursor: isDragging ? "grabbing" : "grab",
+                }}
+              />
+            </div>
+          </div>
+
+          {/* Bottom Instructions (Hidden on very small screens) */}
+          <div className="absolute bottom-6 text-white/40 text-[10px] uppercase tracking-[0.2em] pointer-events-none hidden sm:block">
+            Pinch or Scroll to Zoom • Drag to Move
           </div>
         </div>
       )}
