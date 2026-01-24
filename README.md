@@ -1,4 +1,4 @@
-# E-Commerce Store Forever - MERN Application
+# OMM
 
 A full-stack e-commerce application built with the MERN stack (MongoDB, Express, React, Node.js). The application features a comprehensive admin panel for management and a user-friendly frontend for shopping.
 
