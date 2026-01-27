@@ -38,7 +38,7 @@ const Product = () => {
     fetchProductData();
   }, [productId, products]);
 
-  // 🔒 Lock scroll when zoom open
+  //  Lock scroll when zoom open
   useEffect(() => {
     document.body.style.overflow = isZoomOpen ? "hidden" : "";
     return () => (document.body.style.overflow = "");
@@ -85,7 +85,7 @@ const Product = () => {
             {productData.name}
           </h1>
 
-          {/* ⭐ Rating */}
+          {/*  Rating */}
           <div className="flex items-center gap-1 mt-2">
             {[1, 2, 3, 4].map((i) => (
               <svg
@@ -104,7 +104,7 @@ const Product = () => {
             </svg>
           </div>
 
-          {/* 💰 Price */}
+          {/*  Price */}
           {(() => {
             const dp = Number(productData.discountPercent || 0);
             const hasDiscount = dp > 0;
@@ -145,7 +145,7 @@ const Product = () => {
 
               return (
                 <>
-                  {/* 🔥 First line (headline) */}
+                  {/*  First line (headline) */}
                   <p className="text-xl font-bold text-gray-900 mb-4">
                     {headline}
                   </p>

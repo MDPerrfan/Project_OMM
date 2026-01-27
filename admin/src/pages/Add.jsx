@@ -4,12 +4,11 @@ import axios from "axios";
 import { backendUrl } from "../App";
 import { toast } from "react-toastify";
 import Loading from "../components/Loading";
-import imageCompression from "browser-image-compression"; // ✅ New Import
+import imageCompression from "browser-image-compression"; 
 
 const Add = ({ token }) => {
   const [loading, setLoading] = useState(false);
-  const [images, setImages] = useState([]); // ✅ Single state for all images
-
+  const [images, setImages] = useState([]); 
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
@@ -34,8 +33,8 @@ const Add = ({ token }) => {
   const onFileChange = (e) => {
     const selectedFiles = Array.from(e.target.files);
     if (selectedFiles.length > 8) {
-      toast.error("You can only upload up to 4 images");
-      // Take only the first 4
+      toast.error("You can only upload up to 8 images");
+  
       setImages(selectedFiles.slice(0, 8));
     } else {
       setImages(selectedFiles);
@@ -63,12 +62,9 @@ const Add = ({ token }) => {
         Object.fromEntries(Object.entries(stock).map(([k, v]) => [k, Number(v) || 0]))
       ));
 
-      // ✅ Loop through and compress images
-      // Your backend expects image1, image2, image3, image4
-      // In your frontend onSubmitHandler:
+    
       for (let i = 0; i < images.length; i++) {
         const compressed = await handleImageCompression(images[i]);
-        // Use "images" for every file - Multer .array() will group them
         formData.append("images", compressed);
       }
       const response = await axios.post(
@@ -81,7 +77,7 @@ const Add = ({ token }) => {
         toast.success(response.data.message);
         setName("");
         setDescription("");
-        setImages([]); // Reset images
+        setImages([]);
         setPrice("");
         setDiscountPercent(0);
         setSizes([]);
@@ -111,12 +107,12 @@ const Add = ({ token }) => {
                 type="file"
                 id="images"
                 hidden
-                multiple // ✅ Allows selecting multiple at once
+                multiple 
                 accept="image/*"
               />
             </label>
 
-            {/* ✅ Preview the selected images */}
+            {/*Preview the selected images */}
             {images.map((img, index) => (
               <div key={index} className="relative">
                 <img

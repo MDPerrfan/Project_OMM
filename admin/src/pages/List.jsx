@@ -9,21 +9,23 @@ const SIZE_OPTIONS = ["S", "M", "L", "XL", "XXL"];
 const List = ({ token }) => {
   const [list, setList] = useState([]);
   const [loading, setLoading] = useState(true);
-
-  // ✅ row-level updating (no full-screen overlay)
   const [updatingId, setUpdatingId] = useState(null);
-
-  // Which row is expanded for editing
   const [editingId, setEditingId] = useState(null);
-
-  // Edit form state (for the expanded row only)
+  
   const [editForm, setEditForm] = useState({
     name: "",
+    description: "",
     price: "",
     discountPercent: 0,
     sizes: [],
     stock: {},
+    images: []
   });
+  const normalizedDescription = editForm.description
+  .replace(/\r\n/g, "\n")   // Windows → Unix
+  .replace(/\r/g, "\n")     // Old Mac
+  .replace(/\n{3,}/g, "\n\n") // Max 1 blank line
+  .trim();
 
   const fetchList = async () => {
     try {
@@ -46,12 +48,10 @@ const List = ({ token }) => {
     fetchList();
   }, []);
 
-  // ✅ helper: patch one product in local state (optimistic UI)
   const patchProductInList = (id, patch) => {
     setList((prev) => prev.map((p) => (p._id === id ? { ...p, ...patch } : p)));
   };
 
-  // ✅ helper: remove one product in local state
   const removeProductFromList = (id) => {
     setList((prev) => prev.filter((p) => p._id !== id));
   };
@@ -68,10 +68,12 @@ const List = ({ token }) => {
     setEditingId(item._id);
     setEditForm({
       name: item.name || "",
+      description: item.description || "",
       price: String(item.price ?? ""),
       discountPercent: Number(item.discountPercent || 0),
       sizes: sizes,
       stock: normalizedStock,
+      images: []
     });
   };
 
@@ -79,6 +81,7 @@ const List = ({ token }) => {
     setEditingId(null);
     setEditForm({
       name: "",
+      description:"",
       price: "",
       discountPercent: 0,
       sizes: [],
@@ -118,56 +121,64 @@ const List = ({ token }) => {
 
     const priceNum = Number(editForm.price);
     if (Number.isNaN(priceNum) || priceNum < 0)
-      return toast.error("Price must be a valid number");
+      return toast.error("Invalid price");
 
     const dp = Number(editForm.discountPercent);
-    if (Number.isNaN(dp) || dp < 0 || dp > 100)
-      return toast.error("Discount must be between 0 and 100");
+    if (dp < 0 || dp > 100)
+      return toast.error("Discount must be 0–100");
 
-    if (!editForm.sizes.length) return toast.error("Select at least one size");
+    if (!editForm.sizes.length)
+      return toast.error("Select at least one size");
 
-    // Ensure stock only includes selected sizes
-    const newStock = {};
+    // ✅ normalize description (CRITICAL FIX)
+    const normalizedDescription = editForm.description
+      .replace(/\r\n/g, "\n")
+      .replace(/\r/g, "\n")
+      .replace(/\n{3,}/g, "\n\n")
+      .trim();
+
+    const stockPayload = {};
     editForm.sizes.forEach((s) => {
-      newStock[s] = Math.max(0, Number(editForm.stock[s] ?? 0) || 0);
+      stockPayload[s] = Math.max(0, Number(editForm.stock[s] ?? 0));
     });
 
-    // ✅ optimistic patch (so UI updates instantly after save)
-    const prevItem = list.find((p) => p._id === id);
-    const optimisticPatch = {
+    const payload = {
+      id,
       name: editForm.name.trim(),
+      description: normalizedDescription, // ✅ SENT
       price: priceNum,
       discountPercent: dp,
       sizes: editForm.sizes,
-      stock: newStock,
+      stock: stockPayload,
     };
 
+    const prevItem = list.find((p) => p._id === id);
+
     setUpdatingId(id);
-    patchProductInList(id, optimisticPatch);
+    patchProductInList(id, payload);
 
     try {
-      const response = await axios.post(
+      const res = await axios.post(
         backendUrl + "/api/product/update",
-        { id, ...optimisticPatch },
+        payload,
         { headers: { token } }
       );
 
-      if (response.data.success) {
+      if (res.data.success) {
         toast.success("Product updated");
         closeEditor();
       } else {
-        // rollback
         if (prevItem) patchProductInList(id, prevItem);
-        toast.error(response.data.message);
+        toast.error(res.data.message);
       }
-    } catch (error) {
-      console.log(error);
+    } catch (err) {
       if (prevItem) patchProductInList(id, prevItem);
-      toast.error(error.message);
+      toast.error(err.message);
     } finally {
       setUpdatingId(null);
     }
   };
+
 
   const toggleBestseller = async (item) => {
     const id = item._id;
@@ -204,7 +215,6 @@ const List = ({ token }) => {
     const prevList = list; // rollback backup
     setUpdatingId(id);
 
-    // ✅ optimistic remove
     removeProductFromList(id);
 
     try {
@@ -252,8 +262,8 @@ const List = ({ token }) => {
           const stockDisplay =
             item.stock && Object.keys(item.stock).length > 0
               ? Object.entries(item.stock)
-                  .map(([size, count]) => `${size}:${count}`)
-                  .join(" ")
+                .map(([size, count]) => `${size}:${count}`)
+                .join(" ")
               : "No stock";
 
           const isEditing = editingId === item._id;
@@ -300,11 +310,10 @@ const List = ({ token }) => {
                 <button
                   disabled={isUpdatingRow}
                   onClick={() => toggleBestseller(item)}
-                  className={`px-2 py-1 rounded text-xs w-fit disabled:opacity-60 disabled:cursor-not-allowed ${
-                    item.bestseller
-                      ? "bg-green-100 text-green-700"
-                      : "bg-gray-100 text-gray-700"
-                  }`}
+                  className={`px-2 py-1 rounded text-xs w-fit disabled:opacity-60 disabled:cursor-not-allowed ${item.bestseller
+                    ? "bg-green-100 text-green-700"
+                    : "bg-gray-100 text-gray-700"
+                    }`}
                 >
                   {item.bestseller ? "Bestseller" : "Make Bestseller"}
                 </button>
@@ -332,9 +341,11 @@ const List = ({ token }) => {
               {/* Expanded editor */}
               {isEditing && (
                 <div className="border-t px-3 py-3 bg-gray-50">
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                   
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+
                     {/* Name */}
-                    <div>
+                    <div className="mt-4">
                       <p className="text-xs mb-1">Name</p>
                       <input
                         className="w-full px-3 py-2 border rounded"
@@ -347,7 +358,7 @@ const List = ({ token }) => {
                     </div>
 
                     {/* Price */}
-                    <div>
+                    <div className="mt-4">
                       <p className="text-xs mb-1">Price</p>
                       <input
                         type="number"
@@ -379,8 +390,21 @@ const List = ({ token }) => {
                         disabled={isUpdatingRow}
                       />
                     </div>
-                  </div>
 
+                  </div>
+                  {/* Description */}
+                  <div className="mt-4">
+                    <p className="text-xs mb-1">Description</p>
+                    <textarea
+                      rows="3"
+                      className="w-full px-3 py-2 border rounded"
+                      value={editForm.description}
+                      onChange={(e) =>
+                        setEditForm((p) => ({ ...p, description: e.target.value }))
+                      }
+                      disabled={isUpdatingRow}
+                    />
+                  </div>
                   {/* Sizes */}
                   <div className="mt-4">
                     <p className="text-xs mb-2">Sizes</p>
@@ -393,11 +417,10 @@ const List = ({ token }) => {
                             type="button"
                             disabled={isUpdatingRow}
                             onClick={() => toggleSize(s)}
-                            className={`px-3 py-1 rounded border text-sm disabled:opacity-60 disabled:cursor-not-allowed ${
-                              selected
-                                ? "bg-orange-50 border-orange-400 text-orange-700"
-                                : "bg-white"
-                            }`}
+                            className={`px-3 py-1 rounded border text-sm disabled:opacity-60 disabled:cursor-not-allowed ${selected
+                              ? "bg-orange-50 border-orange-400 text-orange-700"
+                              : "bg-white"
+                              }`}
                           >
                             {s}
                           </button>
