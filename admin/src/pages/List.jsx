@@ -11,7 +11,7 @@ const List = ({ token }) => {
   const [loading, setLoading] = useState(true);
   const [updatingId, setUpdatingId] = useState(null);
   const [editingId, setEditingId] = useState(null);
-  
+
   const [editForm, setEditForm] = useState({
     name: "",
     description: "",
@@ -19,13 +19,14 @@ const List = ({ token }) => {
     discountPercent: 0,
     sizes: [],
     stock: {},
-    images: []
+    existingImages: [], // <--- Make sure this is an empty array
+    newImages: {}
   });
   const normalizedDescription = editForm.description
-  .replace(/\r\n/g, "\n")   // Windows → Unix
-  .replace(/\r/g, "\n")     // Old Mac
-  .replace(/\n{3,}/g, "\n\n") // Max 1 blank line
-  .trim();
+    .replace(/\r\n/g, "\n")   // Windows → Unix
+    .replace(/\r/g, "\n")     // Old Mac
+    .replace(/\n{3,}/g, "\n\n") // Max 1 blank line
+    .trim();
 
   const fetchList = async () => {
     try {
@@ -73,19 +74,38 @@ const List = ({ token }) => {
       discountPercent: Number(item.discountPercent || 0),
       sizes: sizes,
       stock: normalizedStock,
-      images: []
+      existingImages: item.image || [], // Store current URLs
+      newImages: {}
     });
   };
+  const handleImageCompression = async (file) => {
+    if (!file) return null;
+    const options = { maxSizeMB: 1, maxWidthOrHeight: 1920, useWebWorker: true };
+    try {
+      const compressedFile = await imageCompression(file, options);
+      return new File([compressedFile], file.name, { type: file.type });
+    } catch (error) { return file; }
+  };
 
+  const handleReplaceImage = (index, file) => {
+    if (file) {
+      setEditForm(prev => ({
+        ...prev,
+        newImages: { ...prev.newImages, [index]: file }
+      }));
+    }
+  };
   const closeEditor = () => {
     setEditingId(null);
     setEditForm({
       name: "",
-      description:"",
+      description: "",
       price: "",
       discountPercent: 0,
       sizes: [],
       stock: {},
+      existingImages: [], // <--- Make sure this is an empty array
+      newImages: {}
     });
   };
 
@@ -117,62 +137,40 @@ const List = ({ token }) => {
   };
 
   const saveEdits = async (id) => {
-    if (!editForm.name.trim()) return toast.error("Name is required");
-
-    const priceNum = Number(editForm.price);
-    if (Number.isNaN(priceNum) || priceNum < 0)
-      return toast.error("Invalid price");
-
-    const dp = Number(editForm.discountPercent);
-    if (dp < 0 || dp > 100)
-      return toast.error("Discount must be 0–100");
-
-    if (!editForm.sizes.length)
-      return toast.error("Select at least one size");
-
-    // ✅ normalize description (CRITICAL FIX)
-    const normalizedDescription = editForm.description
-      .replace(/\r\n/g, "\n")
-      .replace(/\r/g, "\n")
-      .replace(/\n{3,}/g, "\n\n")
-      .trim();
-
-    const stockPayload = {};
-    editForm.sizes.forEach((s) => {
-      stockPayload[s] = Math.max(0, Number(editForm.stock[s] ?? 0));
-    });
-
-    const payload = {
-      id,
-      name: editForm.name.trim(),
-      description: normalizedDescription, // ✅ SENT
-      price: priceNum,
-      discountPercent: dp,
-      sizes: editForm.sizes,
-      stock: stockPayload,
-    };
-
-    const prevItem = list.find((p) => p._id === id);
-
     setUpdatingId(id);
-    patchProductInList(id, payload);
-
     try {
-      const res = await axios.post(
-        backendUrl + "/api/product/update",
-        payload,
-        { headers: { token } }
-      );
+      const formData = new FormData();
+      formData.append("id", id);
+      formData.append("name", editForm.name.trim());
+      formData.append("description", editForm.description);
+      formData.append("price", editForm.price);
+      formData.append("discountPercent", editForm.discountPercent);
+      formData.append("sizes", JSON.stringify(editForm.sizes));
+      formData.append("stock", JSON.stringify(editForm.stock));
+
+      // Append existing images that weren't replaced
+      // We send the current state of the image array to the backend
+      const finalImages = [...editForm.existingImages];
+      formData.append("existingImages", JSON.stringify(finalImages));
+
+      // Append new files and tell the backend which index they belong to
+      for (const [index, file] of Object.entries(editForm.newImages)) {
+        const compressed = await handleImageCompression(file);
+        formData.append("images", compressed);
+      }
+
+      const res = await axios.post(backendUrl + "/api/product/update", formData, {
+        headers: { token, "Content-Type": "multipart/form-data" }
+      });
 
       if (res.data.success) {
         toast.success("Product updated");
+        fetchList(); // Refresh list to show new images
         closeEditor();
       } else {
-        if (prevItem) patchProductInList(id, prevItem);
         toast.error(res.data.message);
       }
     } catch (err) {
-      if (prevItem) patchProductInList(id, prevItem);
       toast.error(err.message);
     } finally {
       setUpdatingId(null);
@@ -185,7 +183,6 @@ const List = ({ token }) => {
     const nextValue = !item.bestseller;
 
     setUpdatingId(id);
-    // ✅ optimistic
     patchProductInList(id, { bestseller: nextValue });
 
     try {
@@ -341,7 +338,30 @@ const List = ({ token }) => {
               {/* Expanded editor */}
               {isEditing && (
                 <div className="border-t px-3 py-3 bg-gray-50">
-                   
+                  {/* Image Replacement Section */}
+                  <div className="mt-4">
+                    <p className="text-xs mb-2">Product Images (Click to replace)</p>
+                    <div className="flex flex-wrap gap-3">
+                      {editForm.existingImages.map((img, index) => (
+                        <div key={index} className="relative group w-28 h-28">
+                          <img
+                            className="w-full h-full object-cover rounded border"
+                            src={editForm.newImages[index] ? URL.createObjectURL(editForm.newImages[index]) : img}
+                            alt=""
+                          />
+                          <label className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity rounded">
+                            <span className="text-[10px] text-white font-bold">REPLACE</span>
+                            <input
+                              type="file"
+                              hidden
+                              accept="image/*"
+                              onChange={(e) => handleReplaceImage(index, e.target.files[0])}
+                            />
+                          </label>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
 
                     {/* Name */}
