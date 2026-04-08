@@ -25,13 +25,34 @@ const Footer = () => {
         <div>
           <p className="text-xl font-medium mb-5">COMPANY</p>
           <ul className="flex flex-col gap-1 text-gray-600">
-            <li>Home</li>
-            <li>About us</li>
-            <li>Delivery</li>
+            <li>
+              <a 
+                href="/" 
+                className="hover:text-black transition-colors"
+              >
+                Home
+              </a>
+            </li>
+            <li>
+              <a 
+                href="/about" 
+                className="hover:text-black transition-colors"
+              >
+                About us
+              </a>
+            </li>
+            <li>
+              <a 
+                href="/delivery" 
+                className="hover:text-black transition-colors"
+              >
+                Delivery
+              </a>
+            </li>
             <li>
               <a 
                 href="/privacy" 
-                className="hover:text-black transition-colors font-medium text-blue-600"
+                className="hover:text-black transition-colors"
               >
                 Privacy policy
               </a>
@@ -87,8 +108,8 @@ const Footer = () => {
       </div>
       <div>
         <hr />
-        <p className="py-5 text-sm text-center">
-          Copyright 2026-All Right Reserved.
+        <p className="py-5 text-sm text-center text-gray-500">
+          Designed and Developed by <a href="https://parves.net/" target="_blank" rel="noopener noreferrer" className="hover:text-black transition-colors font-semibold text-orange-500">Parves</a>
         </p>
       </div>
     </div>

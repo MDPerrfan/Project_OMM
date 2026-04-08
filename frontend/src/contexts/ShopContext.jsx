@@ -1,4 +1,4 @@
-import { createContext, useEffect, useState } from "react";
+import { createContext, useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -32,7 +32,7 @@ const ShopContextProvider = ({ children }) => {
 
   const navigate = useNavigate();
 
-  const addToCart = async (itemId, size) => {
+  const addToCart = useCallback(async (itemId, size) => {
     if (!size) {
       return toast.error("Select Size");
     }
@@ -65,9 +65,9 @@ const ShopContextProvider = ({ children }) => {
         toast.error(error.message);
       }
     }
-  };
+  }, [backendUrl, cartItems, token]);
 
-  const getCartCount = () => {
+  const cartCount = useMemo(() => {
     let totalCount = 0;
     for (const items in cartItems) {
       for (const item in cartItems[items]) {
@@ -81,9 +81,9 @@ const ShopContextProvider = ({ children }) => {
       }
     }
     return totalCount;
-  };
+  }, [cartItems]);
 
-  const updateQuantity = async (itemId, size, quantity) => {
+  const updateQuantity = useCallback(async (itemId, size, quantity) => {
     let cartData = structuredClone(cartItems);
     cartData[itemId][size] = quantity;
     setCartItems(cartData);
@@ -100,12 +100,13 @@ const ShopContextProvider = ({ children }) => {
         toast.error(error.message);
       }
     }
-  };
+  }, [backendUrl, cartItems, token]);
 
-  const getCartAmount = () => {
+  const cartAmount = useMemo(() => {
+    const productsById = new Map(products.map((product) => [product._id, product]));
     let totalAmount = 0;
     for (const items in cartItems) {
-      let itemInfo = products.find((product) => product._id === items);
+      let itemInfo = productsById.get(items);
       for (const item in cartItems[items]) {
         if (cartItems[items][item] > 0) {
           try {
@@ -115,10 +116,10 @@ const ShopContextProvider = ({ children }) => {
       }
     }
     return totalAmount;
-  };
+  }, [cartItems, products]);
 
   // ✅ Rename to fetchProducts so UI can call it on "Try Again"
-  const fetchProducts = async () => {
+  const fetchProducts = useCallback(async () => {
     try {
       setLoadingProducts(true);
       setProductsError(false); // ✅ clear error when retrying
@@ -139,9 +140,9 @@ const ShopContextProvider = ({ children }) => {
     } finally {
       setLoadingProducts(false);
     }
-  };
+  }, [backendUrl]);
 
-  const getWebsiteInfo = async () => {
+  const getWebsiteInfo = useCallback(async () => {
     try {
       setLoadingWebsiteInfo(true);
       const response = await axios.get(backendUrl + "/api/website/get");
@@ -154,9 +155,9 @@ const ShopContextProvider = ({ children }) => {
     } finally {
       setLoadingWebsiteInfo(false);
     }
-  };
+  }, [backendUrl]);
 
-  const getUserCart = async (token) => {
+  const getUserCart = useCallback(async (token) => {
     try {
       setLoadingCart(true);
       const response = await axios.post(
@@ -174,7 +175,7 @@ const ShopContextProvider = ({ children }) => {
     } finally {
       setLoadingCart(false);
     }
-  };
+  }, [backendUrl]);
 
   useEffect(() => {
     localStorage.setItem("token", token);
@@ -186,7 +187,10 @@ const ShopContextProvider = ({ children }) => {
     getWebsiteInfo();
   }, []);
 
-  const value = {
+  const getCartCount = useCallback(() => cartCount, [cartCount]);
+  const getCartAmount = useCallback(() => cartAmount, [cartAmount]);
+
+  const value = useMemo(() => ({
     products,
     currency,
     deliveryFee,
@@ -219,7 +223,28 @@ const ShopContextProvider = ({ children }) => {
     // ✅ expose error + retry function
     productsError,
     fetchProducts,
-  };
+  }), [
+    products,
+    currency,
+    deliveryFee,
+    search,
+    showSearch,
+    cartItems,
+    addToCart,
+    getCartCount,
+    updateQuantity,
+    getCartAmount,
+    navigate,
+    backendUrl,
+    token,
+    guestId,
+    websiteInfo,
+    loadingProducts,
+    loadingCart,
+    loadingWebsiteInfo,
+    productsError,
+    fetchProducts,
+  ]);
 
   return <ShopContext.Provider value={value}>{children}</ShopContext.Provider>;
 };
