@@ -3,7 +3,6 @@ import ServiceUnavailable from "../components/ServiceUnavailable.jsx";
 import { ShopContext } from "../contexts/ShopContext";
 import Title from "../components/Title";
 import ProductItem from "../components/ProductItem";
-import ProductGridSkeleton from "../components/ProductGridSkeleton";
 
 const Collection = () => {
   const { products, search, showSearch, loadingProducts,productsError,fetchProducts} = useContext(ShopContext);
@@ -189,9 +188,7 @@ const Collection = () => {
           </select>
         </div>
         {/* Mapping Products */}
-        {loadingProducts ? (
-          <ProductGridSkeleton count={12} />
-        ) : (
+        {!loadingProducts && (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 gap-y-6">
           {filterProducts.map((item, index) => (
                 <ProductItem

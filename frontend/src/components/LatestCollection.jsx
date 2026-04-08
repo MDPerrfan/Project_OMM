@@ -2,7 +2,6 @@ import React, { useContext, useEffect, useState } from "react";
 import { ShopContext } from "../contexts/ShopContext";
 import Title from "./Title";
 import ProductItem from "./ProductItem";
-import ProductGridSkeleton from "./ProductGridSkeleton";
 
 const isProductOutOfStock = (p) => {
   const sizes = Array.isArray(p?.sizes) ? p.sizes : [];
@@ -34,9 +33,7 @@ const LatestCollection = () => {
         </p>
       </div>
 
-      {loadingProducts ? (
-        <ProductGridSkeleton count={10} />
-      ) : (
+      {!loadingProducts && (
         <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-4 gap-y-6">
           {latestProducts.map((item) => (
             <ProductItem

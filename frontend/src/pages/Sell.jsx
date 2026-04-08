@@ -1,7 +1,6 @@
 import React, { useMemo,useContext } from "react";
 import Title from "../components/Title";
 import ProductItem from "../components/ProductItem";
-import ProductGridSkeleton from "../components/ProductGridSkeleton";
 import { ShopContext } from "../contexts/ShopContext";
 import ServiceUnavailable from "../components/ServiceUnavailable";
 const Sell = () => {
@@ -25,9 +24,7 @@ const { products,loadingProducts,productsError,fetchProducts} = useContext(ShopC
         </p>
       </div>
 
-      {loadingProducts ? (
-        <ProductGridSkeleton count={10} />
-      ) : discountedProducts.length === 0 ? (
+      {!loadingProducts && discountedProducts.length === 0 ? (
         <p className="text-center text-gray-500 py-10">No discounted products right now.</p>
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 gap-y-6">

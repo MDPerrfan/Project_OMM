@@ -2,7 +2,6 @@ import React, { useContext, useEffect, useState } from "react";
 import { ShopContext } from "../contexts/ShopContext";
 import Title from "./Title";
 import ProductItem from "./ProductItem";
-import ProductGridSkeleton from "./ProductGridSkeleton";
 
 const BestSeller = () => {
   const { products, loadingProducts } = useContext(ShopContext);
@@ -21,9 +20,7 @@ const BestSeller = () => {
         Grab them before they’re gone! Shop the high-demand styles that everyone is talking about this season.
         </p>
       </div>
-      {loadingProducts ? (
-        <ProductGridSkeleton count={5} />
-      ) : (
+      {!loadingProducts && (
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 gap-y-6">
         {bestSeller.map((item, index) => (
           <ProductItem
