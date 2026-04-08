@@ -84,9 +84,9 @@ const Testimonials = () => {
                               </div>
 
                               <p className='text-sm/6 text-gray-500'>{item.text}</p>
-                              <div className='flex items-center gap-4 mt-4'>
+                              <div className='flex flex-col md:flex-row items-center gap-4 mt-4'>
                                   <img src={item.img} alt="User Avatar" className='w-13 h-13 rounded-full object-cover' />
-                                  <div>
+                                  <div className="flex flex-col items-start justify-start gap-1">
                                       <p className='text-sm text-gray-500'>{item.name}</p>  
                                       <p className='text-xs font-medium text-gray-500'>{item.role}</p>
                                   </div>
