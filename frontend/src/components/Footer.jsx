@@ -28,7 +28,14 @@ const Footer = () => {
             <li>Home</li>
             <li>About us</li>
             <li>Delivery</li>
-            <li>Privacy policy</li>
+            <li>
+              <a 
+                href="/privacy" 
+                className="hover:text-black transition-colors font-medium text-blue-600"
+              >
+                Privacy policy
+              </a>
+            </li>     
           </ul>
         </div>
         <div>
