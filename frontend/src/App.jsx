@@ -42,7 +42,7 @@ const App = () => {
         <Route path="/place-order" element={<PlaceOrder />} />
         <Route path="/orders" element={<Orders />} />
         <Route path="/verify" element={<Verify />} />
-        <Route path="/bkash/callback" element={<BkashCallback />} />
+        {/* <Route path="/bkash/callback" element={<BkashCallback />} /> */}
         <Route path="/privacy" element={<PrivacyPolicy/>} />
       </Routes>
       <Footer />
