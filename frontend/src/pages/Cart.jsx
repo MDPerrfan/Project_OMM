@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { ShopContext } from "../contexts/ShopContext";
 import Title from "../components/Title";
 import CartTotal from "../components/CartTotal";
-import { toast } from "react-toastify";
+import { toast } from "../utils/toast";
 import Loading from "../components/Loading";
 
 const Cart = () => {

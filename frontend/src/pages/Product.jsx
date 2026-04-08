@@ -8,10 +8,11 @@ import { useParams } from "react-router-dom";
 import { ShopContext } from "../contexts/ShopContext";
 import RelatedProducts from "../components/RelatedProducts";
 import Loading from "../components/Loading";
+import { toast } from "../utils/toast";
 
 const Product = () => {
   const { productId } = useParams();
-  const { products, currency, addToCart, loadingProducts } =
+  const { products, currency, addToCart, loadingProducts, navigate } =
     useContext(ShopContext);
 
   const [productData, setProductData] = useState(false);
@@ -47,6 +48,15 @@ const Product = () => {
   if (loadingProducts) {
     return <Loading message="Loading product..." />;
   }
+
+  const handleBuyNow = async () => {
+    if (!size) {
+      toast.warning("Please select a size before buying");
+      return;
+    }
+    await addToCart(productData._id, size);
+    navigate("/cart");
+  };
 
   return productData ? (
     <div className="border-t-2 pt-10 transition-opacity duration-500 opacity-100">
@@ -165,7 +175,7 @@ const Product = () => {
 
 
 
-          {/* 📦 Sizes */}
+          {/* Sizes */}
           <div className="flex flex-col gap-4 my-8">
             <p>Select Size</p>
 
@@ -198,7 +208,7 @@ const Product = () => {
                   >
                     {item}
 
-                    {/* ✅ STOCK COUNT */}
+                    {/* STOCK COUNT */}
                     {stockCount !== null && (
                       <span
                         className={`ml-2 text-xs ${isOutOfStock
@@ -210,7 +220,7 @@ const Product = () => {
                       </span>
                     )}
 
-                    {/* ❌ Diagonal line if out of stock */}
+                    {/*  Diagonal line if out of stock */}
                     {isOutOfStock && (
                       <span className="pointer-events-none absolute left-[-20%] top-1/2 h-[2px] w-[140%] -rotate-12 bg-gray-400 opacity-70" />
                     )}
@@ -219,7 +229,7 @@ const Product = () => {
               })}
             </div>
 
-            {/* ✅ AVAILABLE UNITS BELOW */}
+            {/* AVAILABLE UNITS BELOW */}
             {size &&
               productData.stock &&
               productData.stock[size] !== undefined && (
@@ -240,6 +250,12 @@ const Product = () => {
             className="bg-black text-white px-8 py-3"
           >
             ADD TO CART
+          </button>
+          <button
+            onClick={handleBuyNow}
+            className="bg-orange-600 text-white px-8 py-3 ml-3"
+          >
+            BUY NOW
           </button>
         </div>
       </div>
@@ -361,7 +377,7 @@ const Product = () => {
             }}
             onMouseUp={() => setIsDragging(false)}
             onMouseLeave={() => setIsDragging(false)}
-            // ✅ Mobile Touch Support
+            // Mobile Touch Support
             onTouchStart={(e) => {
               if (e.touches.length === 1) {
                 setIsDragging(true);

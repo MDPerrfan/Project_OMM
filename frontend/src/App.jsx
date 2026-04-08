@@ -16,12 +16,11 @@ import Navbar from "./components/Navbar";
 import Orders from "./pages/Orders";
 import Footer from "./components/Footer";
 import SearchBar from "./components/SearchBar";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/ReactToastify.css";
 import Verify from "./pages/Verify";
 // import BkashCallback from "./pages/BkashCallback";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import Preloader from "./components/Preloader";
+import ToastProvider from "./components/ToastProvider";
 
 const App = () => {
   const { loadingProducts, loadingWebsiteInfo, websiteInfo } = useContext(ShopContext);
@@ -75,7 +74,7 @@ const App = () => {
 
   return (
     <div className="px-4 sm:px-[5vw] md:px-[7vw] lg:px-[9vw]">
-      <ToastContainer />
+      <ToastProvider />
       <Navbar />
       <SearchBar />
       <Routes>
