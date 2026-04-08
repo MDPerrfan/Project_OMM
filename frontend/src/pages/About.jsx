@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import Title from "../components/Title";
-import NewsLetter from "../components/NewsLetter";
+import Testimonials from "../components/Testimonials";
 import { ShopContext } from "../contexts/ShopContext";
 
 const About = () => {
@@ -71,7 +71,7 @@ const About = () => {
           </p>
         </div>
       </div>
-      <NewsLetter />
+      <Testimonials />
     </div>
   );
 };
