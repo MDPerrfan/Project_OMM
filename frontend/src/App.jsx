@@ -20,7 +20,7 @@ import SearchBar from "./components/SearchBar";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/ReactToastify.css";
 import Verify from "./pages/Verify";
-import BkashCallback from "./pages/BkashCallback";
+// import BkashCallback from "./pages/BkashCallback";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 
 const App = () => {
