@@ -71,7 +71,7 @@ const Navbar = () => {
               />
             </div>
           ) : (
-            <SignInButton mode="modal" redirectUrl="/">
+            <SignInButton mode="modal" forceRedirectUrl="/">
               <svg
                 className="w-5 h-5 cursor-pointer"
                 fill="none"

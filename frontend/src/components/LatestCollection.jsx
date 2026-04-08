@@ -33,8 +33,13 @@ const LatestCollection = () => {
         </p>
       </div>
 
-      {!loadingProducts && (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 gap-y-6">
+      <div className="relative min-h-[240px]">
+        {loadingProducts && (
+          <div className="absolute inset-0 z-20 flex items-center justify-center bg-white/70 backdrop-blur-sm rounded-md">
+            <div className="h-10 w-10 rounded-full border-2 border-gray-300 border-t-black animate-spin" />
+          </div>
+        )}
+        <div className={`grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 gap-y-6 transition-opacity ${loadingProducts ? "opacity-35 pointer-events-none" : "opacity-100"}`}>
           {latestProducts.map((item) => (
             <ProductItem
               key={item._id}
@@ -48,7 +53,7 @@ const LatestCollection = () => {
             />
           ))}
         </div>
-      )}
+      </div>
     </div>
   );
 };

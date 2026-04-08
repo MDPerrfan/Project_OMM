@@ -36,7 +36,6 @@ const Preloader = () => {
             <span className="omm-line-sweep block h-full w-14 rounded-full bg-white/90" />
           </span>
         </div>
-        <p className="text-[11px] tracking-[0.34em] text-white/65">PREPARING OMMVERSE</p>
       </div>
 
       <style>{`

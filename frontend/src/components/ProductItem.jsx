@@ -138,7 +138,7 @@ const ProductItem = ({ id, image, name, price, discountPercent = 0, stock = {}, 
             className="absolute inset-0 bg-black/35"
             onClick={() => setIsCartSidebarOpen(false)}
           />
-          <div className="absolute right-0 top-0 h-full w-full max-w-sm bg-white shadow-2xl p-5 overflow-y-auto">
+          <div className="absolute right-0 top-0 h-full w-1/2 min-w-[220px] bg-white shadow-2xl p-4 overflow-y-auto sm:w-full sm:max-w-sm sm:p-5">
             <div className="flex items-center justify-between border-b pb-3">
               <h3 className="text-lg font-semibold">Quick Cart</h3>
               <button
