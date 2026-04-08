@@ -53,10 +53,10 @@ const Testimonials = () => {
                   }`
               }
           </style>
-          <section className='bg-black/30 py-20 px-4 sm:px-6 lg:px-8'>
+          <section className='bg-transparent py-20 px-4 sm:px-6 lg:px-8'>
               <div className='w-full max-w-6xl mx-auto'>
-                  <h1 className='text-white font-medium text-4xl md:text-[40px] text-center md:text-left'>Loved by 10k+ People</h1>
-                  <p className='text-white text-sm/6 mt-4 max-w-96 text-center md:text-left mx-auto md:mx-0'>Every single testimonial is a testament to the profound impact we strive to create every single day.</p>
+                  <h1 className='text-gray-600 font-medium text-4xl md:text-[40px] text-center md:text-left'>Loved by 10k+ People</h1>
+                  <p className='text-gray-600 text-sm/6 mt-4 max-w-96 text-center md:text-left mx-auto md:mx-0'>Every single testimonial is a testament to the profound impact we strive to create every single day.</p>
 
                   <div className='hidden md:flex justify-end gap-2 mt-4'>
                       <div onClick={handlePrev} className='h-10 w-10 rounded-lg bg-neutral-900 border border-neutral-800 flex items-center justify-center cursor-pointer hover:bg-neutral-800 transition-all text-white'>
@@ -70,7 +70,7 @@ const Testimonials = () => {
                   <div className='mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 px-8 md:px-0 mt-12 md:mt-6'>
 
                       {testimonials.slice(currentIndex, isMobile ? currentIndex + 1 : currentIndex + 3).map((item) => (
-                          <div key={item.id} className='bg-neutral-900 hover:-translate-y-1 transition duration-300 border border-neutral-800 rounded-2xl p-6 space-y-6'>
+                          <div key={item.id} className='bg-neutral-800 hover:-translate-y-1 transition duration-300 border border-neutral-800 rounded-2xl p-6 space-y-6'>
                               <div className='flex items-start justify-between'>
                                   <div className="flex">
                                       {Array(5).fill(0).map((_, i) => (
@@ -80,15 +80,15 @@ const Testimonials = () => {
                                           </svg>
                                       ))}
                                   </div>
-                                  <p className='text-xs text-gray-300'>{item.date}</p>
+                                  <p className='text-xs text-gray-400'>{item.date}</p>
                               </div>
 
-                              <p className='text-sm/6 text-gray-300'>{item.text}</p>
+                              <p className='text-sm/6 text-gray-500'>{item.text}</p>
                               <div className='flex items-center gap-4 mt-4'>
                                   <img src={item.img} alt="User Avatar" className='w-13 h-13 rounded-full object-cover' />
                                   <div>
-                                      <p className='text-sm text-gray-300'>{item.name}</p>
-                                      <p className='text-xs font-medium text-gray-400'>{item.role}</p>
+                                      <p className='text-sm text-gray-500'>{item.name}</p>  
+                                      <p className='text-xs font-medium text-gray-500'>{item.role}</p>
                                   </div>
                               </div>
                           </div>
@@ -98,8 +98,8 @@ const Testimonials = () => {
                       {testimonials.map((_, index) => (
                           <span onClick={() => setCurrentIndex(index)} key={index}
                               className={`w-3 h-3 rounded-full transition-all ${index === currentIndex
-                                  ? "bg-white"
-                                  : "bg-white/20"
+                                  ? "bg-gray-600"
+                                  : "bg-gray-600/20"
                                   }`}
                           ></span>
                       ))}

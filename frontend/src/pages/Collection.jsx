@@ -75,7 +75,7 @@ const Collection = () => {
     sortProduct();
   }, [sortType]);
 
-  // ✅ show only after loading finishes
+  //  show only after loading finishes
   if (!loadingProducts && productsError) {
     return <ServiceUnavailable onRetry={fetchProducts} />;
   }
@@ -189,7 +189,7 @@ const Collection = () => {
         </div>
         {/* Mapping Products */}
         {!loadingProducts && (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 gap-y-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 shandow-lg gap-4 gap-y-6">
           {filterProducts.map((item, index) => (
                 <ProductItem
                 key={index}

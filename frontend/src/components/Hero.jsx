@@ -9,11 +9,11 @@ const Hero = () => {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center">
+    <div className="flex flex-col items-center justify-center rounded-md">
       {/* Hero left side */}
     
       {/* Hero right side */}
-      <img className="w-full sm:w-full" src={websiteInfo.heroImage} alt="hero_img" />
+      <img className="w-full sm:w-full rounded-md" src={websiteInfo.heroImage} alt="hero_img" />
     </div>
   );
 };
