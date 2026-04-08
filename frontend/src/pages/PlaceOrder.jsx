@@ -3,12 +3,13 @@ import Title from "../components/Title";
 import CartTotal from "../components/CartTotal";
 import { ShopContext } from "../contexts/ShopContext";
 import axios from "axios";
-import { toast } from "react-toastify";
+import { toast } from "../utils/toast";
 import { useUser } from "@clerk/clerk-react";
 import Loading from "../components/Loading";
 
 const PlaceOrder = () => {
   const [loading, setLoading] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState("COD");
   const {
     navigate,
     backendUrl,
@@ -120,8 +121,7 @@ const PlaceOrder = () => {
 
   const onSubmitHandler = async (e) => {
     e.preventDefault();
-    console.log("Hi");
-
+    setLoading(true);
     try {
       let orderItems = [];
       for (const items in cartItems) {
@@ -139,23 +139,39 @@ const PlaceOrder = () => {
         }
       }
 
-      let orderData = {
-        userId: user?.id || guestId, // Clerk user id if signed in, else guestId
+      const orderData = {
+        userId: user?.id || guestId,
         address: formData,
         items: orderItems,
         amount: getCartAmount() + shippingFee,
       };
 
-      const response = await axios.post(
-        backendUrl + "/api/order/place",
-        orderData,
-        token ? { headers: { token } } : {}
-      );
-      if (response.data.success) {
-        setCartItems({});
-        navigate("/orders");
-      } else {
-        toast.error(response.data.message);
+      if (paymentMethod === "COD") {
+        const response = await axios.post(
+          backendUrl + "/api/order/place",
+          orderData,
+          token ? { headers: { token } } : {}
+        );
+
+        if (response.data.success) {
+          setCartItems({});
+          navigate("/orders");
+        } else {
+          toast.error(response.data.message);
+        }
+      } else if (paymentMethod === "BKASH") {
+        const response = await axios.post(
+          backendUrl + "/api/order/bkash/create",
+          orderData,
+          token ? { headers: { token } } : {}
+        );
+
+        if (response.data.success && response.data.bkashURL) {
+          setCartItems({});
+          window.location.href = response.data.bkashURL;
+        } else {
+          toast.error(response.data.message || "Failed to initiate bKash payment");
+        }
       }
     } catch (error) {
       console.log(error);
@@ -271,15 +287,41 @@ const PlaceOrder = () => {
         <div className="mt-8 min-w-80">
           <CartTotal shippingFee={shippingFee} />
         </div>
-        <div className="mt-12">
+          <div className="mt-12">
           <Title text1={"PAYMENT"} text2={"METHOD"} />
           <div className="flex gap-3 flex-col lg:flex-row">
-            <div className="flex items-center gap-3 border p-2 px-3 cursor-default">
-              <p className="min-w-3.5 h-3.5 border rounded-full bg-green-400"></p>
+            <button
+              type="button"
+              onClick={() => setPaymentMethod("COD")}
+              className={`flex items-center gap-3 border p-2 px-3 cursor-pointer ${
+                paymentMethod === "COD" ? "border-black" : "border-gray-300"
+              }`}
+            >
+              <p
+                className={`min-w-3.5 h-3.5 border rounded-full ${
+                  paymentMethod === "COD" ? "bg-green-400" : "bg-white"
+                }`}
+              ></p>
               <p className="text-gray-500 text-sm font-medium mx-4">
                 CASH ON DELIVERY
               </p>
-            </div>
+            </button>
+            <button
+              type="button"
+              onClick={() => setPaymentMethod("BKASH")}
+              className={`flex items-center gap-3 border p-2 px-3 cursor-pointer ${
+                paymentMethod === "BKASH" ? "border-black" : "border-gray-300"
+              }`}
+            >
+              <p
+                className={`min-w-3.5 h-3.5 border rounded-full ${
+                  paymentMethod === "BKASH" ? "bg-green-400" : "bg-white"
+                }`}
+              ></p>
+              <p className="text-gray-500 text-sm font-medium mx-4">
+                bKash
+              </p>
+            </button>
           </div>
           <div className="w-full text-end mt-8">
             <button
