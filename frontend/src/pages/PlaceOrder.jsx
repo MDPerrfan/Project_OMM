@@ -306,7 +306,7 @@ const PlaceOrder = () => {
                 CASH ON DELIVERY
               </p>
             </button>
-            <button
+            {/* <button
               type="button"
               onClick={() => setPaymentMethod("BKASH")}
               className={`flex items-center gap-3 border p-2 px-3 cursor-pointer ${
@@ -321,7 +321,7 @@ const PlaceOrder = () => {
               <p className="text-gray-500 text-sm font-medium mx-4">
                 bKash
               </p>
-            </button>
+            </button> */}
           </div>
           <div className="w-full text-end mt-8">
             <button
