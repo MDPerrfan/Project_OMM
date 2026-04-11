@@ -7,6 +7,7 @@ import React, {
 import { useParams } from "react-router-dom";
 import { ShopContext } from "../contexts/ShopContext";
 import RelatedProducts from "../components/RelatedProducts";
+import SizeChartButton from "../components/SizeChartButton";
 import Loading from "../components/Loading";
 import { toast } from "../utils/toast";
 
@@ -241,6 +242,13 @@ const Product = () => {
                 </p>
               )}
           </div>
+
+          {/* SIZE CHART BUTTON */}
+          {productData.sizeChart && (
+            <div className="my-4">
+              <SizeChartButton sizeChart={productData.sizeChart} />
+            </div>
+          )}
 
 
           <button

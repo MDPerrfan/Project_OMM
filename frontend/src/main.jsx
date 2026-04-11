@@ -7,8 +7,9 @@ import ScrollToTop from "./components/ScrollToTop.jsx";
 import { ClerkProvider } from '@clerk/clerk-react'
 
 // Import your Publishable Key
+console.log(import.meta.env)
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
-
+console.log("Publishable Key:", PUBLISHABLE_KEY) // Debugging line to check the key
 if (!PUBLISHABLE_KEY) {
   throw new Error("Missing Publishable Key")
 }

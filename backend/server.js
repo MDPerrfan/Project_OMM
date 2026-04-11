@@ -9,6 +9,7 @@ import cartRouter from "./routes/cartRoute.js";
 import orderRouter from "./routes/orderRoute.js";
 import websiteInfoRouter from "./routes/websiteInfoRoute.js";
 import reviewRouter from "./routes/reviewRoute.js";
+import sizeChartRoute from "./routes/sizeChartRoute.js";
 
 const app = express();
 
@@ -68,6 +69,7 @@ app.use("/api/cart", cartRouter);
 app.use("/api/order", orderRouter);
 app.use("/api/website", websiteInfoRouter);
 app.use("/api/reviews", reviewRouter);
+app.use("/api/sizechart", sizeChartRoute);
 
 app.get("/", (req, res) => {
     res.send("API WORKING");

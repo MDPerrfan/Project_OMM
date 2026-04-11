@@ -14,6 +14,7 @@ const addProduct = async(req, res) => {
             sizes,
             stock,
             discountPercent,
+            sizeChart,
         } = req.body;
 
         const files = Array.isArray(req.files) ?
@@ -64,6 +65,7 @@ const addProduct = async(req, res) => {
             stock: stockData,
             image: imagesUrl,
             discountPercent: discountPercent !== undefined ? Number(discountPercent) : 0,
+            sizeChart: sizeChart ? sizeChart : null,
             date: Date.now(),
         };
 
@@ -87,7 +89,7 @@ const addProduct = async(req, res) => {
 
 const updateProduct = async(req, res) => {
     try {
-        const { id, name, description, price, category, subCategory, bestseller, sizes, stock, discountPercent } = req.body;
+        const { id, name, description, price, category, subCategory, bestseller, sizes, stock, discountPercent, sizeChart } = req.body;
 
         if (!id) return res.json({ success: false, message: "Product id is required" });
 
@@ -106,6 +108,7 @@ const updateProduct = async(req, res) => {
 
         if (sizes) updateData.sizes = JSON.parse(sizes);
         if (stock) updateData.stock = JSON.parse(stock);
+        if (sizeChart !== undefined) updateData.sizeChart = sizeChart ? sizeChart : null;
 
         // 2. IMAGE REPLACEMENT LOGIC
         let currentImages = [...product.image]; // Start with existing images
@@ -145,7 +148,7 @@ const updateProduct = async(req, res) => {
 // function for listing product
 const listProducts = async(req, res) => {
     try {
-        const products = await productModel.find({});
+        const products = await productModel.find({}).populate("sizeChart");
         res.json({ success: true, products });
     } catch (error) {
         console.log(error);
@@ -177,7 +180,7 @@ const removeProduct = async(req, res) => {
 const singleProduct = async(req, res) => {
     try {
         const { productId } = req.body;
-        const product = await productModel.findById(productId);
+        const product = await productModel.findById(productId).populate("sizeChart");
 
         res.json({
             success: true,

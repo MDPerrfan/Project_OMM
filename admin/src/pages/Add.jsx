@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { assets } from "../assets/admin_assets/assets";
 import axios from "axios";
 import { backendUrl } from "../App";
@@ -18,6 +18,25 @@ const Add = ({ token }) => {
   const [bestseller, setBestseller] = useState(false);
   const [sizes, setSizes] = useState([]);
   const [stock, setStock] = useState({});
+  const [sizeChart, setSizeChart] = useState(null);
+  const [sizeCharts, setSizeCharts] = useState([]);
+
+  // Fetch size charts on component mount
+  useEffect(() => {
+    const fetchSizeCharts = async () => {
+      try {
+        const response = await axios.get(backendUrl + "/api/sizechart/list");
+        if (response.data.success) {
+          setSizeCharts(response.data.sizeCharts);
+        }
+      } catch (error) {
+        console.log("Failed to fetch size charts");
+      }
+    };
+    fetchSizeCharts();
+  }, []);
+  const [sizeChart, setSizeChart] = useState(null);
+  const [sizeCharts, setSizeCharts] = useState([]);
 
   const handleImageCompression = async (file) => {
     if (!file) return null;
@@ -43,7 +62,10 @@ const Add = ({ token }) => {
 
   const onSubmitHandler = async (e) => {
     try {
-      e.preventDefault();
+      e.p
+      if (sizeChart) {
+        formData.append("sizeChart", sizeChart);
+      }reventDefault();
       if (images.length === 0) {
         return toast.error("Please upload at least one image");
       }
@@ -79,6 +101,7 @@ const Add = ({ token }) => {
         setDescription("");
         setImages([]);
         setPrice("");
+        setSizeChart(null);
         setDiscountPercent(0);
         setSizes([]);
         setStock({});
@@ -200,6 +223,21 @@ const Add = ({ token }) => {
             </div>
           </div>
         )}
+
+        <div className="w-full">
+          <p className="mb-2">Size Chart (Optional)</p>
+          <select 
+            onChange={(e) => setSizeChart(e.target.value || null)} 
+            value={sizeChart || ""} 
+            className="w-full max-w-[500px] px-3 py-2 border"
+          >
+            <option value="">-- Select a Size Chart --</option>
+            {sizeCharts.map((chart) => (
+              <option key={chart._id} value={chart._id}>{chart.name}</option>
+            ))}
+          </select>
+          <p className="text-xs text-gray-500 mt-1">Customers will be able to view this size chart on the product page</p>
+        </div>
 
         <div className="flex gap-2 mt-2">
           <input onChange={() => setBestseller(prev => !prev)} checked={bestseller} type="checkbox" id="bestseller" />

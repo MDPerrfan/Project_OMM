@@ -6,6 +6,7 @@ import Add from "./pages/Add";
 import List from "./pages/List";
 import Orders from "./pages/Orders";
 import WebsiteInfo from "./pages/WebsiteInfo";
+import SizeChart from "./pages/SizeChart";
 import Login from "./components/Login";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/ReactToastify.css";
@@ -42,6 +43,10 @@ const App = () => {
                 <Route
                   path="/website-info"
                   element={<WebsiteInfo token={token} />}
+                />
+                <Route
+                  path="/size-chart"
+                  element={<SizeChart token={token} />}
                 />
               </Routes>
             </div>

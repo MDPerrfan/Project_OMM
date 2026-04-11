@@ -8,6 +8,8 @@ const productSchema = new mongoose.Schema({
   category: { type: String, required: true },
   subCategory: { type: String, required: true },
   sizes: { type: Array, required: true },
+  // Reference to size chart (optional)
+  sizeChart: { type: mongoose.Schema.Types.ObjectId, ref: "sizeChart", default: null },
   // Flag to mark a product as bestseller
   bestseller: { type: Boolean, default: false },
   // Stock count for each size: { "S": 10, "M": 5, "L": 8 }
