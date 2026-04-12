@@ -4,11 +4,11 @@ import axios from "axios";
 import { backendUrl } from "../App";
 import { toast } from "react-toastify";
 import Loading from "../components/Loading";
-import imageCompression from "browser-image-compression"; 
+import imageCompression from "browser-image-compression";
 
 const Add = ({ token }) => {
   const [loading, setLoading] = useState(false);
-  const [images, setImages] = useState([]); 
+  const [images, setImages] = useState([]);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
@@ -51,7 +51,7 @@ const Add = ({ token }) => {
     const selectedFiles = Array.from(e.target.files);
     if (selectedFiles.length > 8) {
       toast.error("You can only upload up to 8 images");
-  
+
       setImages(selectedFiles.slice(0, 8));
     } else {
       setImages(selectedFiles);
@@ -82,11 +82,12 @@ const Add = ({ token }) => {
         formData.append("sizeChart", sizeChart);
       }
 
-    
-      for (let i = 0; i < images.length; i++) {
-        const compressed = await handleImageCompression(images[i]);
-        formData.append("images", compressed);
-      }
+
+      const compressedImages = await Promise.all(
+        images.map(img => handleImageCompression(img))
+      )
+      compressedImages.forEach(img=>formData.append("images", img))
+      
       const response = await axios.post(
         backendUrl + "/api/product/add",
         formData,
@@ -128,7 +129,7 @@ const Add = ({ token }) => {
                 type="file"
                 id="images"
                 hidden
-                multiple 
+                multiple
                 accept="image/*"
               />
             </label>
@@ -224,9 +225,9 @@ const Add = ({ token }) => {
 
         <div className="w-full">
           <p className="mb-2">Size Chart (Optional)</p>
-          <select 
-            onChange={(e) => setSizeChart(e.target.value || null)} 
-            value={sizeChart || ""} 
+          <select
+            onChange={(e) => setSizeChart(e.target.value || null)}
+            value={sizeChart || ""}
             className="w-full max-w-[500px] px-3 py-2 border"
           >
             <option value="">-- Select a Size Chart --</option>
