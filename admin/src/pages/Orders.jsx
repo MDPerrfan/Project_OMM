@@ -4,6 +4,7 @@ import { backendUrl, currency } from "../App";
 import { toast } from "react-toastify";
 import { assets } from "../assets/admin_assets/assets";
 import Loading from "../components/Loading";
+import { Trash2Icon } from "lucide-react";
 
 const POLL_INTERVAL = 15000; // 15 seconds
 
@@ -11,6 +12,7 @@ const Orders = ({ token }) => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(false);
   const [updating, setUpdating] = useState(false);
+  const [deletingId, setDeletingId] = useState(null);
 
   const fetchAllOrders = async () => {
     if (!token) return;
@@ -53,6 +55,29 @@ const Orders = ({ token }) => {
     }
   };
 
+  const deleteHandler = async (id) => {
+    if (deletingId) return; // Prevent multiple simultaneous deletes
+    
+    if (!window.confirm("Are you sure to delete the order info?")) {
+      return;
+    }
+    
+    try {
+      setDeletingId(id);
+      const response = await axios.post(backendUrl + '/api/order/delete-order', { id }, { headers: { token } })
+      if (response.data.success) {
+        toast.success("Order info removed!")
+        await fetchAllOrders();
+      } else {
+        toast.error(response.data.message);
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error(error.response?.data?.message || error.message);
+    } finally {
+      setDeletingId(null);
+    }
+  }
   useEffect(() => {
     fetchAllOrders();
 
@@ -110,18 +135,28 @@ const Orders = ({ token }) => {
             <p className="text-sm sm:text-[15px]">
               {currency}{order.amount}
             </p>
-            <select
-              onChange={(e) => statusHandler(e, order._id)}
-              value={order.status}
-              className="p-2 font-semibold"
-            >
-              <option value="Order Placed">Order Placed</option>
-              <option value="Packing">Packing</option>
-              <option value="Shipped">Shipped</option>
-              <option value="Out For Delivery">Out For Delivery</option>
-              <option value="Delivered">Delivered</option>
-              <option value="Cancelled">Cancelled</option>
-            </select>
+            <div className="flex gap-2 justify-between items-center">
+              <select
+                onChange={(e) => statusHandler(e, order._id)}
+                value={order.status}
+                className="p-2 font-semibold"
+              >
+                <option value="Order Placed">Order Placed</option>
+                <option value="Packing">Packing</option>
+                <option value="Shipped">Shipped</option>
+                <option value="Out For Delivery">Out For Delivery</option>
+                <option value="Delivered">Delivered</option>
+                <option value="Cancelled">Cancelled</option>
+              </select>
+              <button 
+                onClick={() => deleteHandler(order._id)}
+                disabled={deletingId === order._id}
+                className={deletingId === order._id ? "opacity-50 cursor-not-allowed" : ""}
+              >
+                <Trash2Icon className="size-4 text-red-400" />
+              </button>
+            </div>
+
           </div>
         ))}
       </div>
