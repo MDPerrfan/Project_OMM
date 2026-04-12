@@ -35,8 +35,6 @@ const Add = ({ token }) => {
     };
     fetchSizeCharts();
   }, []);
-  const [sizeChart, setSizeChart] = useState(null);
-  const [sizeCharts, setSizeCharts] = useState([]);
 
   const handleImageCompression = async (file) => {
     if (!file) return null;
@@ -62,10 +60,7 @@ const Add = ({ token }) => {
 
   const onSubmitHandler = async (e) => {
     try {
-      e.p
-      if (sizeChart) {
-        formData.append("sizeChart", sizeChart);
-      }reventDefault();
+      e.preventDefault();
       if (images.length === 0) {
         return toast.error("Please upload at least one image");
       }
@@ -83,6 +78,9 @@ const Add = ({ token }) => {
       formData.append("stock", JSON.stringify(
         Object.fromEntries(Object.entries(stock).map(([k, v]) => [k, Number(v) || 0]))
       ));
+      if (sizeChart) {
+        formData.append("sizeChart", sizeChart);
+      }
 
     
       for (let i = 0; i < images.length; i++) {

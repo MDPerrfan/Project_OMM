@@ -3,30 +3,24 @@ import axios from "axios";
 import { backendUrl, currency } from "../App";
 import { toast } from "react-toastify";
 import { assets } from "../assets/admin_assets/assets";
-import { io } from "socket.io-client";
 import Loading from "../components/Loading";
+
+const POLL_INTERVAL = 15000; // 15 seconds
 
 const Orders = ({ token }) => {
   const [orders, setOrders] = useState([]);
-  // Start as not loading; only show loader while we actually talk to the server
   const [loading, setLoading] = useState(false);
   const [updating, setUpdating] = useState(false);
 
   const fetchAllOrders = async () => {
+    if (!token) return;
     try {
-      if (!token) {
-        // No admin token → nothing to load, don't block the UI with a spinner
-        setLoading(false);
-        return;
-      }
-
       setLoading(true);
       const response = await axios.post(
         backendUrl + "/api/order/list",
         {},
         { headers: { token } }
       );
-
       if (response.data.success) {
         setOrders(response.data.orders);
       } else {
@@ -48,7 +42,6 @@ const Orders = ({ token }) => {
         { orderId, status: event.target.value },
         { headers: { token } }
       );
-
       if (response.data.success) {
         await fetchAllOrders();
       }
@@ -62,25 +55,14 @@ const Orders = ({ token }) => {
 
   useEffect(() => {
     fetchAllOrders();
-    
-    // Listen for new orders via Socket.io and refresh the list
-    if (token) {
-      const socket = io(backendUrl, {
-        transports: ["websocket", "polling"],
-      });
 
-      socket.on("newOrder", () => {
-        // Refresh orders list when new order arrives
-        fetchAllOrders();
-      });
-
-      return () => {
-        socket.disconnect();
-      };
-    }
+    // Vercel does not support WebSockets (long-lived TCP connections).
+    // We use plain HTTP polling instead — simple and reliable on serverless.
+    const interval = setInterval(fetchAllOrders, POLL_INTERVAL);
+    return () => clearInterval(interval);
   }, [token]);
 
-  if (loading) {
+  if (loading && orders.length === 0) {
     return <Loading message="Loading orders..." />;
   }
 
@@ -97,32 +79,21 @@ const Orders = ({ token }) => {
             <img className="w-12" src={assets.parcel_icon} alt="parcel-icon" />
             <div>
               <div>
-                {order.items.map((item, index) => {
-                  if (index === order.items.length - 1) {
-                    return (
-                      <p className="py-0.5" key={index}>
-                        {item.name} x {item.quantity} <span>{item.size}</span>
-                      </p>
-                    );
-                  } else {
-                    return (
-                      <p className="py-0.5" key={index}>
-                        {item.name} x {item.quantity} <span>{item.size}</span>,
-                      </p>
-                    );
-                  }
-                })}
+                {order.items.map((item, index) => (
+                  <p className="py-0.5" key={index}>
+                    {item.name} x {item.quantity} <span>{item.size}</span>
+                    {index !== order.items.length - 1 && ","}
+                  </p>
+                ))}
               </div>
               <p className="mt-3 mb-2 font-medium">
                 {order.address.firstName + " " + order.address.lastName}
               </p>
               <div>
                 <p>{order.address.fullAddress + ", "}</p>
-
                 <p>
                   {order.address.district +
                     ", " +
-                  
                     order.address.country +
                     ", " +
                     order.address.zipcode}
@@ -131,16 +102,13 @@ const Orders = ({ token }) => {
               <p>{order.address.phone}</p>
             </div>
             <div>
-              <p className="text-sm sm:text-[15px]">
-                Items: {order.items.length}
-              </p>
+              <p className="text-sm sm:text-[15px]">Items: {order.items.length}</p>
               <p className="mt-3">Method: {order.paymentMethod}</p>
               <p>Payment: {order.payment ? "Done" : "Pending"}</p>
               <p>Date: {new Date(order.date).toLocaleString()}</p>
             </div>
             <p className="text-sm sm:text-[15px]">
-              {currency}
-              {order.amount}
+              {currency}{order.amount}
             </p>
             <select
               onChange={(e) => statusHandler(e, order._id)}
