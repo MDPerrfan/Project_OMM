@@ -352,42 +352,71 @@ const SizeChart = ({ token }) => {
                   </div>
                 </div>
 
+                {/* 
+  FIX: Derive column headers from ALL rows (not just sizes[0]),
+  then look up each value by key explicitly instead of relying
+  on Object.entries() order — which breaks when rows have
+  different keys or different key ordering in the stored data.
+*/}
+
                 {/* Table preview (sm+) */}
                 <div className="hidden sm:block overflow-x-auto">
-                  <table className="w-full text-xs border-collapse">
-                    <thead>
-                      <tr className="bg-gray-100">
-                        <th className="border px-2 py-1 text-left">Size</th>
-                        {Object.keys(chart.sizes[0]?.measurements || {}).map((key) => (
-                          <th key={key} className="border px-2 py-1 text-left">{key}</th>
-                        ))}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {chart.sizes.map((sizeData, idx) => (
-                        <tr key={idx} className="even:bg-gray-50">
-                          <td className="border px-2 py-1 font-medium">{sizeData.size}</td>
-                          {Object.entries(sizeData.measurements).map(([key, value]) => (
-                            <td key={key} className="border px-2 py-1">{value}</td>
+                  {(() => {
+                    // Collect every unique measurement key across ALL size rows
+                    const allKeys = Array.from(
+                      new Set(
+                        chart.sizes.flatMap((s) => Object.keys(s.measurements || {}))
+                      )
+                    );
+                    return (
+                      <table className="w-full text-xs border-collapse">
+                        <thead>
+                          <tr className="bg-gray-100">
+                            <th className="border px-2 py-1 text-left">Size</th>
+                            {allKeys.map((key) => (
+                              <th key={key} className="border px-2 py-1 text-left">{key}</th>
+                            ))}
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {chart.sizes.map((sizeData, idx) => (
+                            <tr key={idx} className="even:bg-gray-50">
+                              <td className="border px-2 py-1 font-medium">{sizeData.size}</td>
+                              {/* Explicit key lookup — never depends on entry order */}
+                              {allKeys.map((key) => (
+                                <td key={key} className="border px-2 py-1">
+                                  {sizeData.measurements?.[key] ?? ""}
+                                </td>
+                              ))}
+                            </tr>
                           ))}
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                        </tbody>
+                      </table>
+                    );
+                  })()}
                 </div>
 
                 {/* Mobile preview — stacked cards */}
                 <div className="sm:hidden grid gap-2">
-                  {chart.sizes.map((sizeData, idx) => (
-                    <div key={idx} className="bg-gray-50 rounded p-2 text-xs">
-                      <span className="font-semibold text-gray-700">Size: {sizeData.size}</span>
-                      <div className="flex flex-wrap gap-x-3 gap-y-1 mt-1 text-gray-600">
-                        {Object.entries(sizeData.measurements).map(([key, value]) => (
-                          <span key={key}>{key}: <span className="font-medium">{value}</span></span>
-                        ))}
+                  {(() => {
+                    const allKeys = Array.from(
+                      new Set(
+                        chart.sizes.flatMap((s) => Object.keys(s.measurements || {}))
+                      )
+                    );
+                    return chart.sizes.map((sizeData, idx) => (
+                      <div key={idx} className="bg-gray-50 rounded p-2 text-xs">
+                        <span className="font-semibold text-gray-700">Size: {sizeData.size}</span>
+                        <div className="flex flex-wrap gap-x-3 gap-y-1 mt-1 text-gray-600">
+                          {allKeys.map((key) => (
+                            <span key={key}>
+                              {key}: <span className="font-medium">{sizeData.measurements?.[key] ?? "—"}</span>
+                            </span>
+                          ))}
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    ));
+                  })()}
                 </div>
               </div>
             ))}

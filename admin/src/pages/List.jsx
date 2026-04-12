@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { backendUrl, currency } from "../App";
 import { toast } from "react-toastify";
 import Loading from "../components/Loading";
+import imageCompression from "browser-image-compression";
 
 const SIZE_OPTIONS = ["S", "M", "L", "XL", "XXL"];
 
@@ -11,6 +12,7 @@ const List = ({ token }) => {
   const [loading, setLoading] = useState(true);
   const [updatingId, setUpdatingId] = useState(null);
   const [editingId, setEditingId] = useState(null);
+  const [sizeCharts, setSizeCharts] = useState([]);
 
   const [editForm, setEditForm] = useState({
     name: "",
@@ -19,6 +21,7 @@ const List = ({ token }) => {
     discountPercent: 0,
     sizes: [],
     stock: {},
+    sizeChart: null,
     existingImages: [], // <--- Make sure this is an empty array
     newImages: {}
   });
@@ -47,7 +50,19 @@ const List = ({ token }) => {
 
   useEffect(() => {
     fetchList();
+    fetchSizeCharts();
   }, []);
+
+  const fetchSizeCharts = async () => {
+    try {
+      const response = await axios.get(backendUrl + "/api/sizechart/list");
+      if (response.data.success) {
+        setSizeCharts(response.data.sizeCharts);
+      }
+    } catch (error) {
+      console.log("Failed to fetch size charts");
+    }
+  };
 
   const patchProductInList = (id, patch) => {
     setList((prev) => prev.map((p) => (p._id === id ? { ...p, ...patch } : p)));
@@ -74,6 +89,7 @@ const List = ({ token }) => {
       discountPercent: Number(item.discountPercent || 0),
       sizes: sizes,
       stock: normalizedStock,
+      sizeChart: item.sizeChart || null,
       existingImages: item.image || [], // Store current URLs
       newImages: {}
     });
@@ -104,6 +120,7 @@ const List = ({ token }) => {
       discountPercent: 0,
       sizes: [],
       stock: {},
+      sizeChart: null,
       existingImages: [], // <--- Make sure this is an empty array
       newImages: {}
     });
@@ -147,6 +164,9 @@ const List = ({ token }) => {
       formData.append("discountPercent", editForm.discountPercent);
       formData.append("sizes", JSON.stringify(editForm.sizes));
       formData.append("stock", JSON.stringify(editForm.stock));
+      if (editForm.sizeChart) {
+        formData.append("sizeChart", editForm.sizeChart);
+      }
 
       // Append existing images that weren't replaced
       // We send the current state of the image array to the backend
@@ -470,6 +490,30 @@ const List = ({ token }) => {
                       </div>
                     </div>
                   )}
+
+                  {/* Size Chart */}
+                  <div className="mt-4">
+                    <p className="text-xs mb-2">Size Chart (Optional)</p>
+                    <select
+                      className="w-full px-3 py-2 border rounded"
+                      value={editForm.sizeChart || ""}
+                      onChange={(e) =>
+                        setEditForm((p) => ({
+                          ...p,
+                          sizeChart: e.target.value || null,
+                        }))
+                      }
+                      disabled={isUpdatingRow}
+                    >
+                      <option value="">-- No Size Chart --</option>
+                      {sizeCharts.map((chart) => (
+                        <option key={chart._id} value={chart._id}>
+                          {chart.name}
+                        </option>
+                      ))}
+                    </select>
+                    <p className="text-xs text-gray-500 mt-1">Customers will be able to view this size chart on the product page</p>
+                  </div>
 
                   <div className="mt-4 flex gap-2 justify-end">
                     <button
